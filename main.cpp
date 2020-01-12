@@ -1,4 +1,5 @@
 //-----------------------------------------------------------------------------
+#include <avr/pgmspace.h>
 #include "avr-misc/avr-misc.h"
 #include "avr-debug/debug.h"
 #include "RTD2660AVR/display.h"
@@ -24,7 +25,13 @@ enum OSD_pallete
     CL_SIZE
 };
 //-----------------------------------------------------------------------------
-BYTE pallete[CL_SIZE][3]=
+enum
+{
+    FONT_BASIC,
+    FONT_GRAPHICS
+};
+//-----------------------------------------------------------------------------
+const BYTE PROGMEM pallete[CL_SIZE][3]=
 {
     {0, 120, 60},       // CL_TRANSPARENT
     {0, 0, 0},          // CL_BLACK
@@ -48,24 +55,21 @@ int main()
 {
     DEBUG_INIT();
 
-    DisplayConfig config;
+    struct DisplayConfig config;
     config.backgroundColor = 0x000000;
-    display.init(&config);
+    display.init(config);
 
 
-    display.showVideo(VS_AV2);
+    //display.showVideo(VS_AV2);
     display.on();
-
-
-
- //   return 0;
 
 
     OSD.setOrigin(0,0);
     OSD.uploadColorPallete((BYTE*)pallete);
+    OSD.setTransparency(2, BLEND_ALL);
 
-    SFontRowStyle rowStyle;
-    SFontAreaStyle fontStyle;
+    struct FontRowStyle rowStyle;
+    struct FontAreaStyle fontStyle;
 
     CFontMap* map1 = &OSD.maps[0];
     CFontMap* map2 = &OSD.maps[1];
@@ -113,11 +117,24 @@ int main()
 
 //====================================================
 
+    WindowConfig wndConf;
+    wndConf.left = 25;
+    wndConf.top = 10;
+    wndConf.width = 750;
+    wndConf.height = 460;
+    wndConf.bodyColor = CL_RX300_BACKGROUND;
+    wndConf.borderWidth = 0;
+    OSD.window[0] = createWindow(wndConf);
 
+    wndConf.top = 134;
+    wndConf.height = 16;
+    wndConf.bodyColor = CL_BLACK;
+    OSD.window[1] = createWindow(wndConf);
 
-    OSD.window[0] = createWindowEx(25, 10, 750, 460, CL_RX300_BACKGROUND, CL_TRANSPARENT, 0);  // 125 x 71 mm
-    OSD.window[1] = createWindowEx(0, 134, 800, 16, CL_BLACK, CL_TRANSPARENT, 0);
-    OSD.window[2] = createWindowEx(0, 296, 800, 6, CL_BLACK, CL_TRANSPARENT, 0);
+    wndConf.top = 296;
+    wndConf.height = 6;
+    OSD.window[2] = createWindow(wndConf);
+
 
     CFontAreaSet alarm(11);
     map1->addEmptyRow(11);
@@ -147,7 +164,7 @@ int main()
     CFontArea* cruise = titles1->addArea(27, 276, "CRUISE INFORMATION", fontStyle);
     titles1->addArea(318, 168, "OUTSIDE TEMP", fontStyle);
 
-    alarm.add(titles1->addArea(502, 254, "ALARM", fontStyle));
+    alarm.add(titles1->addArea(502, 252, "ALARM", fontStyle));
 
     fontStyle.alignment = ALIGN_JUSTIFY;
     fontStyle.fontColor = CL_RX300_FOREGROUND;
@@ -195,39 +212,48 @@ int main()
     line1bot->addArea(15, fontStyle, 1, MG_RD25pxTL);
     line1bot->addArea(753, fontStyle, 1, MG_RD25pxTR);
 
-    alarm.hide();
+    //alarm.hide();
     //display.hideBackground();
     OSD.show(map1);
-
+    //halt();
     AMPM->print("AM");
 
 
-    delay(1);
-
-    delay(1);
-
-    //OSD.hide();
-    AMPM->print("PM");
-    alarm.hide();
-    delay(2);
-
-    alarm.blink();
-    delay(4);
-    alarm.show();
-
-    delay(2);
+//    delay(1);
+//
+//    delay(1);
+//
+//    //OSD.hide();
 //    AMPM->print("PM");
-    alarm.hide();
-    delay(4);
-//    AMPM->print("");
-    alarm.show();
-
-    delay(4);
-
+//    alarm.hide();
+//    delay(2);
+//
+//    alarm.blink();
+//    delay(4);
 //    alarm.show();
+//
+//    delay(2);
+////    AMPM->print("PM");
+//    alarm.hide();
+//    delay(4);
+////    AMPM->print("");
+//    alarm.show();
+//
+//    delay(4);
+//
+////    alarm.show();
 
 
+    memory_usage();
 
+    delay(2);
+    OSD.hide();
+    display.showVideo(VS_AV2);
+    delay(4);
+    //display.hideVideo();
+    OSD.show(map1);
+    delay(2);
+    OSD.setTransparency(3, BLEND_ALL);
 
 
     return 0;

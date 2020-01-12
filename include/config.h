@@ -4,7 +4,7 @@
 #include <avr/io.h>
 //----------------------------------------------------------------------------
 
-#define RTD_VERIFY      0       // 0 = none, 1 = errors, 2 = verbose
+#define LCD_MODEL       TM060RDH01
 
 #define RTD_CS_PORT     PORTD
 #define RTD_CS_DDR      DDRD
@@ -28,6 +28,7 @@
 #define DEBUG_BUF_SIZE  200
 //#define DEBUG_EXTENDED_DUMP
 
+#define RAM_GUARD_ENABLED
 
 //----------------------------------------------------------------------------
 #endif

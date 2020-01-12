@@ -74,16 +74,11 @@
 		<Unit filename="lib/RTD2660AVR/PLL.cpp" />
 		<Unit filename="lib/RTD2660AVR/PLL.h" />
 		<Unit filename="lib/RTD2660AVR/RTD2660_SPI.h" />
-		<Unit filename="lib/RTD2660AVR/colors.cpp" />
 		<Unit filename="lib/RTD2660AVR/colors.h" />
-		<Unit filename="lib/RTD2660AVR/config.h" />
 		<Unit filename="lib/RTD2660AVR/display.cpp" />
 		<Unit filename="lib/RTD2660AVR/display.h" />
-		<Unit filename="lib/RTD2660AVR/font.cpp" />
 		<Unit filename="lib/RTD2660AVR/panel.h" />
 		<Unit filename="lib/RTD2660AVR/panels/TM060RDH01.h" />
-		<Unit filename="lib/RTD2660AVR/power.cpp" />
-		<Unit filename="lib/RTD2660AVR/power.h" />
 		<Unit filename="lib/RTD2660AVR/registers.h" />
 		<Unit filename="lib/RTD2660AVR/registers/common.h" />
 		<Unit filename="lib/RTD2660AVR/registers/page0_ADC.h" />
@@ -105,7 +100,8 @@
 		<Unit filename="lib/RTD2660AVR/scaler.h" />
 		<Unit filename="lib/RTD2660AVR/structure.h" />
 		<Unit filename="lib/RTD2660AVR/structures/little-endian-LSB.h" />
-		<Unit filename="lib/RTD2660AVR/version.h" />
+		<Unit filename="lib/avr-debug/RAM_guard.cpp" />
+		<Unit filename="lib/avr-debug/RAM_guard.h" />
 		<Unit filename="lib/avr-debug/debug.cpp" />
 		<Unit filename="lib/avr-debug/debug.h" />
 		<Unit filename="lib/avr-debug/debug_def.h" />

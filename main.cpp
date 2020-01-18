@@ -3,6 +3,7 @@
 #include "avr-misc/avr-misc.h"
 #include "avr-debug/debug.h"
 #include "RTD2660AVR/display.h"
+#include "improvedOSD.h"
 #pragma GCC diagnostic ignored "-Wunused-variable"
 //-----------------------------------------------------------------------------
 enum OSD_pallete
@@ -28,8 +29,12 @@ enum OSD_pallete
 enum
 {
     FONT_BASIC,
-    FONT_GRAPHICS
+    FONT_GRAPHICS,
+    FONT_CRYSTAL
 };
+//-----------------------------------------------------------------------------
+#define DEG_C   "\014\015"
+#define KMPH    "\017\020\021\022"
 //-----------------------------------------------------------------------------
 const BYTE PROGMEM pallete[CL_SIZE][3]=
 {
@@ -49,18 +54,18 @@ const BYTE PROGMEM pallete[CL_SIZE][3]=
     {180, 180, 180},    // CL_RX300_FOREGROUND
     {25, 45, 65},       // CL_RX300_BACKGROUND
 };
-//-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
 int main()
 {
     DEBUG_INIT();
-
+    //CImprovedOSD OSD;
     struct DisplayConfig config;
     config.backgroundColor = 0x000000;
     display.init(config);
 
 
-    //display.showVideo(VS_AV2);
+//    display.showVideo(VS_AV2);
     display.on();
 
 
@@ -136,7 +141,7 @@ int main()
     OSD.window[2] = createWindow(wndConf);
 
 
-    CFontAreaSet alarm(11);
+    CFontAreaSet alarm;
     map1->addEmptyRow(11);
     CFontRow* line0top = map1->addRow(12, rowStyle);
 
@@ -182,20 +187,41 @@ int main()
     fontStyle.fontColor = CL_RX300_FOREGROUND;
     fontStyle.bgColor = CL_TRANSPARENT;
     fontStyle.fontFace = FONT_BASIC;
-    rowStyle.tracking = 2;
+    rowStyle.tracking = 0;
     CFontRow* titles2 = map1->addRow(18, rowStyle);
+    fontStyle.tracking = 2;
     titles2->addArea(27, 50, "AVG", fontStyle);
-    fontStyle.fontFace = FONT_GRAPHICS;
-    titles2->addArea(450, 36, "\014\015", fontStyle);
 
-    CFontRow* titles3 = map1->addRow(18, rowStyle);
 
+    CFontRow* titles3 = map1->addRow(11, rowStyle);
     CFontRow* titles4 = map1->addRow(18, rowStyle);
-    titles4->addArea(220, 100, "\017\020\021\022", fontStyle);
+
+    CImprovedAreaSet tripComp;
+    fontStyle.fontFace = FONT_CRYSTAL;
+    fontStyle.tracking = 0;
+    tripComp.add(titles2->addArea(85, fontStyle, 13));
+    tripComp.add(titles3->addArea(85, fontStyle, 13));
+    tripComp.add(titles4->addArea(85, fontStyle, 13));
+
+    fontStyle.fontFace = FONT_GRAPHICS;
+    fontStyle.tracking = 2;
+    //titles4->addArea(0, 50, KMPH, fontStyle);
+
+    fontStyle.fontFace = FONT_CRYSTAL;
+    fontStyle.tracking = 0;
+    CImprovedAreaSet outsideTemp;
+    outsideTemp.add(titles2->addArea(400, fontStyle, 6));
+    outsideTemp.add(titles3->addArea(400, fontStyle, 6));
+    outsideTemp.add(titles4->addArea(400, fontStyle, 6));
+
+    fontStyle.fontFace = FONT_GRAPHICS;
+    titles2->addArea(450, 36, DEG_C, fontStyle);
+
     fontStyle.fontFace = FONT_BASIC;
 
     fontStyle.alignment = ALIGN_RIGHT;
-    CFontArea* AMPM = titles4->addArea(515, fontStyle, 2);
+    fontStyle.tracking = 2;
+    CFontArea* AMPM = titles4->addArea(550, fontStyle, 2);
 
     map1->addEmptyRow(2);
     rowStyle.tracking = 0;
@@ -217,6 +243,8 @@ int main()
     OSD.show(map1);
     //halt();
     AMPM->print("AM");
+    tripComp.print("1289");
+    outsideTemp.print("24");
 
 
 //    delay(1);
@@ -225,7 +253,7 @@ int main()
 //
 //    //OSD.hide();
 //    AMPM->print("PM");
-//    alarm.hide();
+
 //    delay(2);
 //
 //    alarm.blink();
@@ -246,14 +274,15 @@ int main()
 
     memory_usage();
 
-    delay(2);
-    OSD.hide();
-    display.showVideo(VS_AV2);
-    delay(4);
+
+    //display.showVideo(VS_AV2);
+    //delay(4);
     //display.hideVideo();
-    OSD.show(map1);
+    //OSD.setTransparency(3, BLEND_ALL);
+
     delay(2);
-    OSD.setTransparency(3, BLEND_ALL);
+
+
 
 
     return 0;

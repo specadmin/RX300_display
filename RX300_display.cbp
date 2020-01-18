@@ -66,6 +66,7 @@
 			<Add after="avr-size -C --mcu=$(MCU) -d $(TARGET_OUTPUT_FILE)" />
 		</ExtraCommands>
 		<Unit filename="fonts/font-basic.h" />
+		<Unit filename="fonts/font-crystal2.h" />
 		<Unit filename="fonts/font-graphics.h" />
 		<Unit filename="include/config.h" />
 		<Unit filename="include/fonts.h" />

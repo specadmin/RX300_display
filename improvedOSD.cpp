@@ -1,22 +1,6 @@
 #include "improvedOSD.h"
 #include "avr-debug/debug.h"
 //-----------------------------------------------------------------------------
-enum
-{
-    _empty = 1,
-
-    _tracking,
-
-    _fA, _Fa, _FA,
-    _aB, _Ab, _AB,
-
-    _efG, _eFg, _Efg, _eFG, _EfG, _EFg, _EFG,
-    _bcG, _bCg, _Bcg, _bCG, _BcG, _BCg, _BCG,
-
-    _dE, _De, _DE,
-    _cD, _Cd, _CD
-};
-//-----------------------------------------------------------------------------
 void CImprovedAreaSet::print3l(const char* str)
 {
     register BYTE len = strlen(str);
@@ -78,6 +62,43 @@ void CImprovedAreaSet::print3l(const char* str)
             str2[j] = _eFG; str2[j + 1] = _BCG;
             str3[j] = _De;  str3[j + 1] = _CD;
             break;
+        case 'C':
+            str1[j] = _FA;  str1[j + 1] = _Ab;
+            str2[j] = _EFg; str2[j + 1] = _empty;
+            str3[j] = _DE;  str3[j + 1] = _cD;
+            break;
+        case 'E':
+            str1[j] = _FA;  str1[j + 1] = _Ab;
+            str2[j] = _EFG; str2[j + 1] = _bcG;
+            str3[j] = _DE;  str3[j + 1] = _cD;
+            break;
+        case 'F':
+            str1[j] = _FA;  str1[j + 1] = _Ab;
+            str2[j] = _EFG; str2[j + 1] = _bcG;
+            str3[j] = _dE;  str3[j + 1] = _empty;
+            break;
+        case 'S':
+            str1[j] = _FA;  str1[j + 1] = _Ab;
+            str2[j] = _eFG; str2[j + 1] = _bCG;
+            str3[j] = _De;  str3[j + 1] = _CD;
+            break;
+        case ' ':
+            str1[j] = _empty;   str1[j + 1] = _empty;
+            str2[j] = _empty;   str2[j + 1] = _empty;
+            str3[j] = _empty;   str3[j + 1] = _empty;
+            break;
+        case '-':
+            str1[j] = _empty;   str1[j + 1] = _empty;
+            str2[j] = _efG;     str2[j + 1] = _bcG;
+            str3[j] = _empty;   str3[j + 1] = _empty;
+            break;
+        case '.':
+            str1[j] = _empty_dot;
+            str2[j] = _empty_dot;
+            str3[j] = _dot;
+            j--;
+            size--;
+            break;
         default:
             DSTR("Unknown character");
         }
@@ -100,6 +121,9 @@ void CImprovedAreaSet::print(const char* str)
 {
     switch(areasCount)
     {
+    case 1:
+        areas[0]->print(str);
+        break;
     case 3:
         print3l(str);
         break;

@@ -66,10 +66,13 @@
 			<Add after="avr-size -C --mcu=$(MCU) -d $(TARGET_OUTPUT_FILE)" />
 		</ExtraCommands>
 		<Unit filename="fonts/font-basic.h" />
-		<Unit filename="fonts/font-crystal2.h" />
+		<Unit filename="fonts/font-crystal3.h" />
 		<Unit filename="fonts/font-graphics.h" />
+		<Unit filename="fonts/font-narrow.h" />
+		<Unit filename="improvedOSD.cpp" />
 		<Unit filename="include/config.h" />
 		<Unit filename="include/fonts.h" />
+		<Unit filename="include/improvedOSD.h" />
 		<Unit filename="lib/RTD2660AVR/OSD.cpp" />
 		<Unit filename="lib/RTD2660AVR/OSD.h" />
 		<Unit filename="lib/RTD2660AVR/PLL.cpp" />

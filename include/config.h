@@ -26,7 +26,7 @@
 #define DEBUG_BIT       1
 #define DEBUG_BAUD_RATE 1152000
 #define DEBUG_BUF_SIZE  200
-//#define DEBUG_EXTENDED_DUMP
+#define DEBUG_EXTENDED_DUMP
 
 #define RAM_GUARD_ENABLED
 

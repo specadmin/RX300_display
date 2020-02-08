@@ -57,6 +57,7 @@ enum
     MG_RD8pxBR,
     MG_RD8pxTL,
     MG_RD8pxTR,
+    MG_FUEL_1, MG_FUEL_2,
     MG_FAN11, MG_FAN12, MG_FAN13,
     MG_FAN21, MG_FAN22, MG_FAN23,
     MG_FAN31, MG_FAN32, MG_FAN33,
@@ -73,6 +74,29 @@ enum
     MG_WSHIELD11, MG_WSHIELD12, MG_WSHIELD13, MG_WSHIELD14,
     MG_WSHIELD21, MG_WSHIELD22, MG_WSHIELD23,
     MG_WSHIELD31, MG_WSHIELD32,
+    MG_CAR_BACK_1, MG_CAR_BACK_2, MG_CAR_BACK_3,
+
+    MG_CAR_RL_DOOR_OPEN_1,
+    MG_CAR_L_DOORS_2_ALL_OPEN,
+    MG_CAR_FL_DOOR_OPEN_1,
+
+    MG_CAR_RR_DOOR_OPEN_1,
+    MG_CAR_R_DOORS_2_ALL_OPEN,
+    MG_CAR_FR_DOOR_OPEN_1,
+
+    MG_CAR_L_DOORS_12,
+    MG_CAR_L_DOORS_22,
+    MG_CAR_L_DOORS_32,
+    MG_CAR_L_FRONT_ROOF,
+    MG_CAR_R_FRONT_ROOF,
+    MG_CAR_R_DOORS_32,
+    MG_CAR_R_DOORS_22,
+    MG_CAR_R_DOORS_12,
+    MG_CAR_L_SIDE_11, MG_CAR_L_SIDE_12,
+    MG_CAR_R_SIDE_11, MG_CAR_R_SIDE_12,
+    MG_CAR_L_SIDE_21,
+    MG_CAR_FRONT_CENTER,
+    MG_CAR_R_SIDE_21,
 };
 //-----------------------------------------------------------------------------
 enum
@@ -86,6 +110,7 @@ enum
 #define DEG_C   "\003\004"
 #define KMPH    "\004\005\006\007"
 #define L100KM  "\003\006\002\001\001\004\005"
+#define KM      "\004\005"
 //-----------------------------------------------------------------------------
 const BYTE PROGMEM pallete[CL_SIZE][3]=
 {
@@ -112,8 +137,13 @@ const BYTE PROGMEM pallete[CL_SIZE][3]=
 #define _DISP_AUTO_LEFT         537
 #define _DISP_WSHIELD_LEFT      560
 #define _DISP_BODY_LEFT         640
+#define _DISP_CAR_LEFT          92
 #define _DISP_HEAD_ARROW_LEFT   _DISP_BODY_LEFT + 14
 #define _DISP_LEGS_ARROW_LEFT   _DISP_BODY_LEFT - 18
+#define FRONT_LEFT              0
+#define FRONT_RIGHT             1
+#define REAR_LEFT               2
+#define REAR_RIGHT              3
 //-----------------------------------------------------------------------------
 CFontAreaSet        disp_alarm;
 CFontAreaSet        disp_tripCompAVG;
@@ -135,6 +165,16 @@ CImprovedAreaSet    disp_mediaText1;
 CImprovedAreaSet    disp_mediaText2;
 CImprovedAreaSet    disp_mediaText3;
 CFontArea*          disp_button[8];
+CFontArea*          disp_left_rear_door;
+CFontArea*          disp_left_doors;
+CFontArea*          disp_left_front_door;
+CFontArea*          disp_right_rear_door;
+CFontArea*          disp_right_doors;
+CFontArea*          disp_right_front_door;
+CFontAreaSet        disp_fuel;
+CFontArea*          disp_fuel_value;
+CFontAreaSet        disp_tires[4];
+CFontArea*          disp_tires_value[4];
 //-----------------------------------------------------------------------------
 void configureClassicDisplayMap(CFontMap* map);
 //-----------------------------------------------------------------------------
@@ -147,12 +187,12 @@ int main()
     OSD.setOrigin(0,0);
     OSD.uploadColorPallete((BYTE*)pallete);
 
-    //display.showVideo(VS_AV2);
+//    display.showVideo(VS_AV2);
     display.on();
 
 
 
-    //OSD.setTransparency(3, BLEND_ALL);
+//    OSD.setTransparency(5, BLEND_ALL);
 
 
     CFontMap* map1 = &OSD.maps[0];
@@ -448,7 +488,20 @@ void configureClassicDisplayMap(CFontMap* map)
 
     CFontRow* row20b = map->addRow(18, rowStyle);
     CFontRow* row20c = map->addRow(4, rowStyle);
-    map->addEmptyRow(12);
+
+
+    // fuel remains
+    fontStyle.fontColor = CL_YELLOW;
+    disp_fuel.add(row20b->addArea(_DISP_CAR_LEFT - 21, fontStyle, 2, MG_FUEL_2, MG_FUEL_1));
+    fontStyle.alignment = ALIGN_RIGHT;
+    fontStyle.fontFace = FONT_BASIC;
+    fontStyle.tracking = 3;
+    disp_fuel_value = row20b->addArea(_DISP_CAR_LEFT, 36, "54", fontStyle);
+    disp_fuel.add(disp_fuel_value);
+    fontStyle.alignment = ALIGN_LEFT;
+    fontStyle.fontFace = FONT_NARROW;
+    disp_fuel.add(row20b->addArea(_DISP_CAR_LEFT + 40, 30, KM, fontStyle));
+//    disp_fuel.hide();
 
     // brightness
     fontStyle.alignment = ALIGN_CENTER;
@@ -463,7 +516,7 @@ void configureClassicDisplayMap(CFontMap* map)
     fontStyle.tracking = 0;
     disp_brightness.add(row20c->addArea(_DISP_SCALE_LEFT - 2, fontStyle, 11,  MG_FILL, MG_RD8pxBL, MG_RD8pxBR));
 
-    CFontRow* row20 = map->addRow(4, rowStyle);
+    CFontRow* row20 = map->addRow(16, rowStyle);
     CFontRow* row21 = map->addRow(18, rowStyle);
     CFontRow* row22 = map->addRow(8, rowStyle);
     CFontRow* row23 = map->addRow(18, rowStyle);
@@ -471,14 +524,74 @@ void configureClassicDisplayMap(CFontMap* map)
     CFontRow* row25 = map->addRow(18, rowStyle);
     CFontRow* row26 = map->addRow(7, rowStyle);
 
-    fontStyle.alignment = ALIGN_LEFT;
+
     fontStyle.fontColor = CL_RX300_FOREGROUND;
     fontStyle.bgColor = CL_TRANSPARENT;
+
+    // rear left tire pressure
+    fontStyle.alignment = ALIGN_RIGHT;
     fontStyle.fontFace = FONT_BASIC;
     fontStyle.tracking = 3;
-    row21->addArea(_DISP_TEMP_LEFT, 80, "TEMP", fontStyle);
+    fontStyle.fontColor = CL_YELLOW;
+    disp_tires_value[REAR_LEFT] = row25->addArea(34, 34, "1.7", fontStyle);
+    disp_tires[REAR_LEFT].add(disp_tires_value[REAR_LEFT]);
+    disp_tires[REAR_LEFT].hide();
+
+    // front left ture pressure
+    disp_tires_value[FRONT_LEFT] = row21->addArea(34, 34, "1.5", fontStyle);
+    disp_tires[FRONT_LEFT].add(disp_tires_value[FRONT_LEFT]);
+    disp_tires[FRONT_LEFT].hide();
+
+    // car
+    fontStyle.fontColor = CL_RX300_FOREGROUND;
+    fontStyle.alignment = ALIGN_JUSTIFY;
+    fontStyle.fontFace = FONT_GRAPHICS;
+    fontStyle.tracking = 0;
+    row25->addArea(_DISP_CAR_LEFT, fontStyle, 4, MG_CAR_BACK_2, MG_CAR_BACK_1, MG_CAR_BACK_3);
+
+    // left-side doors
+    fontStyle.fontColor = CL_YELLOW;
+    disp_left_rear_door = row24->addArea(_DISP_CAR_LEFT - 10, fontStyle, 1, MG_CAR_RL_DOOR_OPEN_1);
+    disp_left_doors = row23->addArea(_DISP_CAR_LEFT - 10, fontStyle, 1, MG_CAR_L_DOORS_2_ALL_OPEN);
+    disp_left_front_door = row22->addArea(_DISP_CAR_LEFT - 10, fontStyle, 1, MG_CAR_FL_DOOR_OPEN_1);
+
+    fontStyle.fontColor = CL_RX300_FOREGROUND;
+    row24->addArea(_DISP_CAR_LEFT, fontStyle, 1, MG_CAR_L_DOORS_12);
+    row23->addArea(_DISP_CAR_LEFT, fontStyle, 1, MG_CAR_L_DOORS_22);
+    row22->addArea(_DISP_CAR_LEFT, fontStyle, 2, MG_CAR_L_FRONT_ROOF, MG_CAR_L_DOORS_32);
+    row21->addArea(_DISP_CAR_LEFT, fontStyle, 2, MG_CAR_L_SIDE_12, MG_CAR_L_SIDE_11);
+    row20->addArea(_DISP_CAR_LEFT, fontStyle, 4, MG_CAR_FRONT_CENTER, MG_CAR_L_SIDE_21, MG_CAR_R_SIDE_21);
+    row21->addArea(0, fontStyle, 2, MG_CAR_R_SIDE_11, MG_CAR_R_SIDE_12);
+    row22->addArea(0, fontStyle, 2, MG_CAR_R_DOORS_32, MG_CAR_R_FRONT_ROOF);
+    row23->addArea(_DISP_CAR_LEFT + 28, fontStyle, 1, MG_CAR_R_DOORS_22);
+    row24->addArea(_DISP_CAR_LEFT + 28, fontStyle, 1, MG_CAR_R_DOORS_12);
+
+    // right-side doors
+    fontStyle.fontColor = CL_YELLOW;
+    disp_right_rear_door = row24->addArea(0, fontStyle, 1, MG_CAR_RR_DOOR_OPEN_1);
+    disp_right_doors = row23->addArea(0, fontStyle, 1, MG_CAR_R_DOORS_2_ALL_OPEN);
+    disp_right_front_door = row22->addArea(0, fontStyle, 1, MG_CAR_FR_DOOR_OPEN_1);
+
+    fontStyle.fontColor = CL_YELLOW;
+    fontStyle.alignment = ALIGN_LEFT;
+    fontStyle.fontFace = FONT_BASIC;
+    fontStyle.tracking = 3;
+
+    // rear right tire pressure
+    disp_tires_value[REAR_RIGHT] = row25->addArea(_DISP_CAR_LEFT + 60, 34, "1.6", fontStyle);
+    disp_tires[REAR_RIGHT].add(disp_tires_value[REAR_RIGHT]);
+    disp_tires[REAR_RIGHT].hide();
+
+    // front right tire pressure
+    disp_tires_value[FRONT_RIGHT] = row21->addArea(_DISP_CAR_LEFT + 60, 34, "1.3", fontStyle);
+    disp_tires[FRONT_RIGHT].add(disp_tires_value[FRONT_RIGHT]);
+    disp_tires[FRONT_RIGHT].hide();
+
 
     // inside temp value
+    fontStyle.fontColor = CL_RX300_FOREGROUND;
+    row21->addArea(_DISP_TEMP_LEFT, 80, "TEMP", fontStyle);
+
     fontStyle.fontFace = FONT_CRYSTAL;
     fontStyle.tracking = 0;
     disp_insideTemp.add(row23->addArea(_DISP_TEMP_LEFT, 140, 15, fontStyle));
@@ -543,7 +656,7 @@ void configureClassicDisplayMap(CFontMap* map)
     // scale bottom border
     row26->addArea(_DISP_SCALE_LEFT - 8, fontStyle, 12, MG_SHB, MG_SHBL, MG_SHBR);
 
-    // windshield
+    // windshield heater
     disp_windShield.add(row21->addArea(_DISP_WSHIELD_LEFT, fontStyle, 2, MG_WSHIELD12, MG_WSHIELD11));
     disp_windShield.add(row21->addArea(_DISP_WSHIELD_LEFT + 24, fontStyle, 2, MG_WSHIELD14, MG_WSHIELD13));
     disp_windShield.add(row22->addArea(_DISP_WSHIELD_LEFT + 7, fontStyle, 3, MG_WSHIELD22, MG_WSHIELD21, MG_WSHIELD23));

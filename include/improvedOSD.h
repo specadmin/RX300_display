@@ -15,14 +15,22 @@ enum
 
     _dot,
 
-    _fA, _Fa, _FA,
-    _aB, _Ab, _AB,
+    _fA, _Fa, _FA, _AI, _aFN,
+    _aB, _Ab, _AB, _aBM,
 
-    _efG, _eFg, _Efg, _eFG, _EfG, _EFg, _EFG,
-    _bcG, _bCg, _Bcg, _bCG, _BcG, _BCg, _BCG,
+    _efG, _eFg, _Efg, _eFG, _EfG, _EFg, _EFG, _IJ, _EFgN,
+    _bcG, _bCg, _Bcg, _bCG, _BcG, _BCg, _BCG, _BCgM, _BCgO,
 
-    _dE, _De, _DE,
-    _cD, _Cd, _CD
+    _dE, _De, _DE, _DJ,
+    _cD, _Cd, _CD, _CdO, _O,
+
+    _K1, _K2,
+    _KL1, _KL2, _KL2T,
+    _L1, _L2, _L2T,
+
+    _AK1, _AK2,
+    _aKL1,
+    _aL1,
 };
 //-----------------------------------------------------------------------------
 class CImprovedAreaSet : public CFontAreaSet

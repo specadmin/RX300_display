@@ -134,16 +134,22 @@ const BYTE PROGMEM pallete[CL_SIZE][3]=
 #define _DISP_TEMP_LEFT         210
 #define _DISP_FAN_LEFT          360
 #define _DISP_SCALE_LEFT        358
-#define _DISP_AUTO_LEFT         537
-#define _DISP_WSHIELD_LEFT      560
-#define _DISP_BODY_LEFT         640
-#define _DISP_CAR_LEFT          92
-#define _DISP_HEAD_ARROW_LEFT   _DISP_BODY_LEFT + 14
-#define _DISP_LEGS_ARROW_LEFT   _DISP_BODY_LEFT - 18
-#define FRONT_LEFT              0
-#define FRONT_RIGHT             1
-#define REAR_LEFT               2
-#define REAR_RIGHT              3
+#define _DISP_AUTO_LEFT             537
+#define _DISP_WSHIELD_LEFT          560
+#define _DISP_BODY_LEFT             640
+#define _DISP_CAR_LEFT              92
+#define _DISP_HEAD_ARROW_LEFT       _DISP_BODY_LEFT + 14
+#define _DISP_LEGS_ARROW_LEFT       _DISP_BODY_LEFT - 18
+#define _DISP_BUTTON_WIDTH          164
+#define _DISP_BUTTON_DISTANCE       19
+#define _DISP_BUTTONS_LEFT          31
+#define _DISP_MEDIA_TEXT_1_LEFT     40
+#define _DISP_MEDIA_TEXT_2_LEFT     310
+#define _DISP_MEDIA_TEXT_3_LEFT     470
+#define FRONT_LEFT                  0
+#define FRONT_RIGHT                 1
+#define REAR_LEFT                   2
+#define REAR_RIGHT                  3
 //-----------------------------------------------------------------------------
 CFontAreaSet        disp_alarm;
 CFontAreaSet        disp_tripCompAVG;
@@ -164,7 +170,7 @@ CFontAreaSet        disp_feetArrow;
 CImprovedAreaSet    disp_mediaText1;
 CImprovedAreaSet    disp_mediaText2;
 CImprovedAreaSet    disp_mediaText3;
-CFontArea*          disp_button[8];
+CFontArea*          disp_buttons[8];
 CFontArea*          disp_left_rear_door;
 CFontArea*          disp_left_doors;
 CFontArea*          disp_left_front_door;
@@ -175,6 +181,12 @@ CFontAreaSet        disp_fuel;
 CFontArea*          disp_fuel_value;
 CFontAreaSet        disp_tires[4];
 CFontArea*          disp_tires_value[4];
+
+CFontArea*          disp_RPT;
+CFontArea*          disp_SKIP;
+CFontArea*          disp_RAND;
+CFontArea*          disp_DSCAN;
+CFontArea*          disp_PSCAN;
 //-----------------------------------------------------------------------------
 void configureClassicDisplayMap(CFontMap* map);
 //-----------------------------------------------------------------------------
@@ -280,6 +292,7 @@ int main()
     disp_tripCompValue.print("17.4");
     disp_outsideTemp.print("-34");
     disp_insideTemp.print("26.5");
+//    disp_insideTemp.print("HOT");
     disp_AMPM.hide();
     disp_alarm.hide();
     disp_clockH.print("23");
@@ -323,9 +336,21 @@ int main()
 //    delay(4);
 //
 ////    alarm.show();
-    disp_mediaText1.print("FESC");
-    disp_mediaText2.print("2");
-    disp_mediaText3.print("2345678");
+    disp_mediaText1.print("FM2");
+    disp_mediaText2.print("4");
+    disp_mediaText3.print("26 1348");
+
+    disp_buttons[0]->print("< DISC");
+    disp_buttons[1]->print("DISC >");
+    disp_buttons[2]->print("<<");
+    disp_buttons[3]->print(">>");
+    disp_buttons[4]->print("RPT");
+    disp_buttons[5]->print("RAND");
+    disp_buttons[6]->print("SCAN");
+
+    //disp_buttons[7]->hide();
+    disp_buttons[7]->print("PSCAN");
+
     //disp_auto.hide();
     //disp_headArrow.hide();
     //disp_windShield.hide();
@@ -594,9 +619,9 @@ void configureClassicDisplayMap(CFontMap* map)
 
     fontStyle.fontFace = FONT_CRYSTAL;
     fontStyle.tracking = 0;
-    disp_insideTemp.add(row23->addArea(_DISP_TEMP_LEFT, 140, 15, fontStyle));
-    disp_insideTemp.add(row24->addArea(_DISP_TEMP_LEFT, 140, 15, fontStyle));
-    disp_insideTemp.add(row25->addArea(_DISP_TEMP_LEFT, 140, 15, fontStyle));
+    disp_insideTemp.add(row23->addArea(_DISP_TEMP_LEFT, 140, 12, fontStyle));
+    disp_insideTemp.add(row24->addArea(_DISP_TEMP_LEFT, 140, 12, fontStyle));
+    disp_insideTemp.add(row25->addArea(_DISP_TEMP_LEFT, 140, 12, fontStyle));
 
     // fan
     fontStyle.fontFace = FONT_GRAPHICS;
@@ -717,7 +742,9 @@ void configureClassicDisplayMap(CFontMap* map)
     CFontRow* row31 = map->addRow(18, rowStyle);
     CFontRow* row32 = map->addRow(11, rowStyle);
     CFontRow* row33 = map->addRow(18, rowStyle);
-    map->addEmptyRow(34);
+    map->addEmptyRow(13);
+    CFontRow* row33b = map->addRow(16, rowStyle);
+    map->addEmptyRow(5);
     CFontRow* row34 = map->addRow(7, rowStyle);
     CFontRow* row35 = map->addRow(8, rowStyle);
     CFontRow* row36 = map->addRow(18, rowStyle);
@@ -725,14 +752,11 @@ void configureClassicDisplayMap(CFontMap* map)
     CFontRow* row38 = map->addRow(12, rowStyle);
 
     // media text 1
-    #define _DISP_MEDIA_TEXT_1_LEFT      70
-    #define _DISP_MEDIA_TEXT_2_LEFT      320
-    #define _DISP_MEDIA_TEXT_3_LEFT      480
     fontStyle.fontFace = FONT_CRYSTAL;
     fontStyle.alignment = ALIGN_RIGHT;
-    disp_mediaText1.add(row31->addArea(_DISP_MEDIA_TEXT_1_LEFT, 140, 11, fontStyle));
-    disp_mediaText1.add(row32->addArea(_DISP_MEDIA_TEXT_1_LEFT, 140, 11, fontStyle));
-    disp_mediaText1.add(row33->addArea(_DISP_MEDIA_TEXT_1_LEFT, 140, 11, fontStyle));
+    disp_mediaText1.add(row31->addArea(_DISP_MEDIA_TEXT_1_LEFT, 160, 12, fontStyle));
+    disp_mediaText1.add(row32->addArea(_DISP_MEDIA_TEXT_1_LEFT, 160, 12, fontStyle));
+    disp_mediaText1.add(row33->addArea(_DISP_MEDIA_TEXT_1_LEFT, 160, 12, fontStyle));
 
     // disc
     fontStyle.fontFace = FONT_BASIC;
@@ -771,10 +795,23 @@ void configureClassicDisplayMap(CFontMap* map)
     fontStyle.fontFace = FONT_BASIC;
     fontStyle.alignment = ALIGN_LEFT;
     fontStyle.tracking = 2;
-    row31->addArea(710, 30, "ST", fontStyle);
+    row31->addArea(684, 30, "ST", fontStyle);
 
     // metal
-    row33->addArea(710, 70, "METAL", fontStyle);
+    row33->addArea(684, 70, "METAL", fontStyle);
+
+    // media states
+
+    disp_RPT = row33b->addArea(_DISP_BUTTONS_LEFT + 2 * (_DISP_BUTTON_WIDTH + _DISP_BUTTON_DISTANCE), 65, "D.RPT", fontStyle);
+    disp_SKIP = row33b->addArea(0, 52, "SKIP", fontStyle);
+    disp_RAND = row33b->addArea(0, 68, "D.RAND", fontStyle);
+
+//    fontStyle.bgColor = CL_RED;
+    fontStyle.alignment = ALIGN_CENTER;
+    disp_DSCAN = row33b->addArea(_DISP_BUTTONS_LEFT + 3 * (_DISP_BUTTON_WIDTH + _DISP_BUTTON_DISTANCE), 82, "D.SCAN", fontStyle);
+    disp_PSCAN = row33b->addArea(0, 82, "P.SCAN", fontStyle);
+    disp_PSCAN->blink();
+//    disp_section3.add(disp_RPT);
 
     // bottom left corner
     fontStyle.fontColor = CL_BLACK;
@@ -782,12 +819,7 @@ void configureClassicDisplayMap(CFontMap* map)
     fontStyle.tracking = 0;
     row38->addArea(15, fontStyle, 1,  MG_RD25pxBL);
 
-    //fontStyle.bgColor = CL_BLACK;
-
     // buttons
-    #define _DISP_BUTTON_WIDTH      164
-    #define _DISP_BUTTON_DISTANCE   19
-    #define _DISP_BUTTONS_LEFT      31
     fontStyle.fontColor = CL_RX300_FOREGROUND;
 
     for(i = 0; i < 4; i++)
@@ -801,8 +833,8 @@ void configureClassicDisplayMap(CFontMap* map)
         fontStyle.fontFace = FONT_BASIC;
         fontStyle.alignment = ALIGN_CENTER;
         fontStyle.tracking = 2;
-        disp_button[i] = row36->addArea(0, _DISP_BUTTON_WIDTH / 2 - 2, "SCAN", fontStyle);
-        disp_button[i + 1] = row36->addArea(0, _DISP_BUTTON_WIDTH / 2 - 2, "PSCAN", fontStyle);
+        disp_buttons[i * 2] = row36->addArea(0, _DISP_BUTTON_WIDTH / 2 - 2, "LABEL_", fontStyle);
+        disp_buttons[i * 2 + 1] = row36->addArea(0, _DISP_BUTTON_WIDTH / 2 - 2, "LABEL_", fontStyle);
 
         fontStyle.fontFace = FONT_GRAPHICS;
         fontStyle.tracking = 0;

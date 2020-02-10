@@ -13,7 +13,7 @@ enum
 
     _topDot, _botDot,
 
-    _dot,
+    _dot, _dash,
 
     _fA, _Fa, _FA, _AI, _aFN,
     _aB, _Ab, _AB, _aBM,

@@ -33,6 +33,10 @@ enum
     MG_DEGREE,
     MG_C,
     MG_F,
+    MG_UP,
+    MG_DOWN,
+    MG_FWD,
+    MG_BKWD,
     MG_6PXSKIP,
     MG_RD25pxBL,
     MG_RD25pxBR,
@@ -44,6 +48,7 @@ enum
     MG_SHB,
     MG_SHBL,
     MG_SHBR,
+    MG_SHV_2,
     MG_SHV,
     MG_SC_FILL1, MG_SC_FILL2,
     MG_SC_TOP11, MG_SC_TOP12,
@@ -97,6 +102,12 @@ enum
     MG_CAR_L_SIDE_21,
     MG_CAR_FRONT_CENTER,
     MG_CAR_R_SIDE_21,
+
+    MG_TIRE_LINE,
+    MG_FL_TIRE_1, MG_FL_TIRE_2,
+    MG_FR_TIRE_1, MG_FR_TIRE_2,
+    MG_RL_TIRE,
+    MG_RR_TIRE,
 };
 //-----------------------------------------------------------------------------
 enum
@@ -111,6 +122,10 @@ enum
 #define KMPH    "\004\005\006\007"
 #define L100KM  "\003\006\002\001\001\004\005"
 #define KM      "\004\005"
+#define UP      "\006"
+#define DOWN    "\007"
+#define FWD2    "\010\010"
+#define BKWD2   "\011\011"
 //-----------------------------------------------------------------------------
 const BYTE PROGMEM pallete[CL_SIZE][3]=
 {
@@ -131,9 +146,9 @@ const BYTE PROGMEM pallete[CL_SIZE][3]=
     {25, 45, 65},       // CL_RX300_BACKGROUND
 };
 //-----------------------------------------------------------------------------
-#define _DISP_TEMP_LEFT         210
-#define _DISP_FAN_LEFT          360
-#define _DISP_SCALE_LEFT        358
+#define _DISP_TEMP_LEFT             210
+#define _DISP_FAN_LEFT              360
+#define _DISP_SCALE_LEFT            358
 #define _DISP_AUTO_LEFT             537
 #define _DISP_WSHIELD_LEFT          560
 #define _DISP_BODY_LEFT             640
@@ -144,8 +159,8 @@ const BYTE PROGMEM pallete[CL_SIZE][3]=
 #define _DISP_BUTTON_DISTANCE       19
 #define _DISP_BUTTONS_LEFT          31
 #define _DISP_MEDIA_TEXT_1_LEFT     40
-#define _DISP_MEDIA_TEXT_2_LEFT     310
-#define _DISP_MEDIA_TEXT_3_LEFT     470
+#define _DISP_MEDIA_TEXT_2_LEFT     280
+#define _DISP_MEDIA_TEXT_3_LEFT     426
 #define FRONT_LEFT                  0
 #define FRONT_RIGHT                 1
 #define REAR_LEFT                   2
@@ -336,14 +351,19 @@ int main()
 //    delay(4);
 //
 ////    alarm.show();
-    disp_mediaText1.print("FM2");
+    disp_mediaText1.print("FM1");
     disp_mediaText2.print("4");
-    disp_mediaText3.print("26 1348");
+    disp_mediaText3.print("26 13'48");
+    //disp_mediaText3.print(" 102.7");
 
-    disp_buttons[0]->print("< DISC");
-    disp_buttons[1]->print("DISC >");
-    disp_buttons[2]->print("<<");
-    disp_buttons[3]->print(">>");
+//    disp_buttons[0]->print("< DISC");
+//    disp_buttons[1]->print("DISC >");
+    disp_buttons[0]->print(DOWN, FONT_GRAPHICS);
+    disp_buttons[1]->print(UP, FONT_GRAPHICS);
+
+    disp_buttons[2]->print(BKWD2, FONT_GRAPHICS);
+    disp_buttons[3]->print(FWD2, FONT_GRAPHICS);
+
     disp_buttons[4]->print("RPT");
     disp_buttons[5]->print("RAND");
     disp_buttons[6]->print("SCAN");
@@ -558,20 +578,23 @@ void configureClassicDisplayMap(CFontMap* map)
     fontStyle.fontFace = FONT_BASIC;
     fontStyle.tracking = 3;
     fontStyle.fontColor = CL_YELLOW;
-    disp_tires_value[REAR_LEFT] = row25->addArea(34, 34, "1.7", fontStyle);
+    disp_tires_value[REAR_LEFT] = row25->addArea(_DISP_CAR_LEFT - 59, 34, "1.0", fontStyle);
     disp_tires[REAR_LEFT].add(disp_tires_value[REAR_LEFT]);
-    disp_tires[REAR_LEFT].hide();
 
-    // front left ture pressure
-    disp_tires_value[FRONT_LEFT] = row21->addArea(34, 34, "1.5", fontStyle);
+    // front left tire pressure
+    disp_tires_value[FRONT_LEFT] = row21->addArea(_DISP_CAR_LEFT - 59, 34, "1.5", fontStyle);
     disp_tires[FRONT_LEFT].add(disp_tires_value[FRONT_LEFT]);
-    disp_tires[FRONT_LEFT].hide();
 
-    // car
-    fontStyle.fontColor = CL_RX300_FOREGROUND;
+    // left-side tires
     fontStyle.alignment = ALIGN_JUSTIFY;
     fontStyle.fontFace = FONT_GRAPHICS;
     fontStyle.tracking = 0;
+    row20->addArea(_DISP_CAR_LEFT - 12, fontStyle, 1, MG_FL_TIRE_1);
+    row21->addArea(_DISP_CAR_LEFT - 21, fontStyle, 2, MG_FL_TIRE_2, MG_TIRE_LINE);
+    row25->addArea(_DISP_CAR_LEFT - 21, fontStyle, 2, MG_RL_TIRE, MG_TIRE_LINE);
+
+    // car
+    fontStyle.fontColor = CL_RX300_FOREGROUND;
     row25->addArea(_DISP_CAR_LEFT, fontStyle, 4, MG_CAR_BACK_2, MG_CAR_BACK_1, MG_CAR_BACK_3);
 
     // left-side doors
@@ -597,20 +620,23 @@ void configureClassicDisplayMap(CFontMap* map)
     disp_right_doors = row23->addArea(0, fontStyle, 1, MG_CAR_R_DOORS_2_ALL_OPEN);
     disp_right_front_door = row22->addArea(0, fontStyle, 1, MG_CAR_FR_DOOR_OPEN_1);
 
+    // right-side tires
     fontStyle.fontColor = CL_YELLOW;
+    row20->addArea(0, fontStyle, 1, MG_FR_TIRE_1);
+    row21->addArea(0, fontStyle, 2, MG_TIRE_LINE, MG_FR_TIRE_2);
+    row25->addArea(0, fontStyle, 2, MG_TIRE_LINE, MG_RR_TIRE);
+
     fontStyle.alignment = ALIGN_LEFT;
     fontStyle.fontFace = FONT_BASIC;
     fontStyle.tracking = 3;
 
     // rear right tire pressure
-    disp_tires_value[REAR_RIGHT] = row25->addArea(_DISP_CAR_LEFT + 60, 34, "1.6", fontStyle);
+    disp_tires_value[REAR_RIGHT] = row25->addArea(_DISP_CAR_LEFT + 66, 36, "0.6", fontStyle);
     disp_tires[REAR_RIGHT].add(disp_tires_value[REAR_RIGHT]);
-    disp_tires[REAR_RIGHT].hide();
 
     // front right tire pressure
-    disp_tires_value[FRONT_RIGHT] = row21->addArea(_DISP_CAR_LEFT + 60, 34, "1.3", fontStyle);
+    disp_tires_value[FRONT_RIGHT] = row21->addArea(_DISP_CAR_LEFT + 66, 36, "2.0", fontStyle);
     disp_tires[FRONT_RIGHT].add(disp_tires_value[FRONT_RIGHT]);
-    disp_tires[FRONT_RIGHT].hide();
 
 
     // inside temp value
@@ -630,7 +656,7 @@ void configureClassicDisplayMap(CFontMap* map)
     disp_fan.add(row22->addArea(_DISP_FAN_LEFT, fontStyle, 3, MG_FAN32, MG_FAN31, MG_FAN33));
 
     // scale
-    row24->addArea(_DISP_SCALE_LEFT - 8, fontStyle, 1, MG_SHV);
+    row24->addArea(_DISP_SCALE_LEFT - 8, fontStyle, 1, MG_SHV_2);
     row25->addArea(_DISP_SCALE_LEFT - 8, fontStyle, 1, MG_SHV);
     BYTE i;
     WORD left;
@@ -738,11 +764,11 @@ void configureClassicDisplayMap(CFontMap* map)
     row25->addArea(_DISP_BODY_LEFT + 42, fontStyle, 1, MG_BODY43);
 
     // section 3
-    map->addEmptyRow(58);
+    map->addEmptyRow(54);
     CFontRow* row31 = map->addRow(18, rowStyle);
     CFontRow* row32 = map->addRow(11, rowStyle);
     CFontRow* row33 = map->addRow(18, rowStyle);
-    map->addEmptyRow(13);
+    map->addEmptyRow(17);
     CFontRow* row33b = map->addRow(16, rowStyle);
     map->addEmptyRow(5);
     CFontRow* row34 = map->addRow(7, rowStyle);
@@ -754,21 +780,21 @@ void configureClassicDisplayMap(CFontMap* map)
     // media text 1
     fontStyle.fontFace = FONT_CRYSTAL;
     fontStyle.alignment = ALIGN_RIGHT;
-    disp_mediaText1.add(row31->addArea(_DISP_MEDIA_TEXT_1_LEFT, 160, 12, fontStyle));
-    disp_mediaText1.add(row32->addArea(_DISP_MEDIA_TEXT_1_LEFT, 160, 12, fontStyle));
-    disp_mediaText1.add(row33->addArea(_DISP_MEDIA_TEXT_1_LEFT, 160, 12, fontStyle));
+    disp_mediaText1.add(row31->addArea(_DISP_MEDIA_TEXT_1_LEFT, 150, 12, fontStyle));
+    disp_mediaText1.add(row32->addArea(_DISP_MEDIA_TEXT_1_LEFT, 150, 12, fontStyle));
+    disp_mediaText1.add(row33->addArea(_DISP_MEDIA_TEXT_1_LEFT, 150, 12, fontStyle));
 
     // disc
     fontStyle.fontFace = FONT_BASIC;
     fontStyle.tracking = 2;
-    row31->addArea(_DISP_MEDIA_TEXT_2_LEFT - 60, 50, "DISC", fontStyle);
+    row31->addArea(_DISP_MEDIA_TEXT_2_LEFT - 64, 50, "DISC", fontStyle);
 
     // channel label
-    row33->addArea(_DISP_MEDIA_TEXT_2_LEFT - 60, 50, "CH", fontStyle);
+    row33->addArea(_DISP_MEDIA_TEXT_2_LEFT - 64, 50, "CH", fontStyle);
 
     // media text 2
     fontStyle.fontFace = FONT_CRYSTAL;
-    fontStyle.alignment = ALIGN_RIGHT;
+    fontStyle.alignment = ALIGN_LEFT;
     fontStyle.tracking = 0;
     disp_mediaText2.add(row31->addArea(_DISP_MEDIA_TEXT_2_LEFT, 40, 3, fontStyle));
     disp_mediaText2.add(row32->addArea(_DISP_MEDIA_TEXT_2_LEFT, 40, 3, fontStyle));
@@ -778,18 +804,18 @@ void configureClassicDisplayMap(CFontMap* map)
     fontStyle.fontFace = FONT_BASIC;
     fontStyle.alignment = ALIGN_RIGHT;
     fontStyle.tracking = 2;
-    row31->addArea(_DISP_MEDIA_TEXT_3_LEFT - 90, 70, "TRACK", fontStyle);
+    row31->addArea(_DISP_MEDIA_TEXT_3_LEFT - 80, 70, "TRACK", fontStyle);
 
     // mute
-    row33->addArea(_DISP_MEDIA_TEXT_3_LEFT - 90, 70, "MUTE", fontStyle);
+    row33->addArea(_DISP_MEDIA_TEXT_3_LEFT - 80, 70, "MUTE", fontStyle);
 
     // media text 3
     fontStyle.fontFace = FONT_CRYSTAL;
     fontStyle.alignment = ALIGN_LEFT;
     fontStyle.tracking = 0;
-    disp_mediaText3.add(row31->addArea(_DISP_MEDIA_TEXT_3_LEFT, 224, 21, fontStyle));
-    disp_mediaText3.add(row32->addArea(_DISP_MEDIA_TEXT_3_LEFT, 224, 21, fontStyle));
-    disp_mediaText3.add(row33->addArea(_DISP_MEDIA_TEXT_3_LEFT, 224, 21, fontStyle));
+    disp_mediaText3.add(row31->addArea(_DISP_MEDIA_TEXT_3_LEFT, 240, 22, fontStyle));
+    disp_mediaText3.add(row32->addArea(_DISP_MEDIA_TEXT_3_LEFT, 240, 22, fontStyle));
+    disp_mediaText3.add(row33->addArea(_DISP_MEDIA_TEXT_3_LEFT, 240, 22, fontStyle));
 
     // ST
     fontStyle.fontFace = FONT_BASIC;
@@ -810,7 +836,7 @@ void configureClassicDisplayMap(CFontMap* map)
     fontStyle.alignment = ALIGN_CENTER;
     disp_DSCAN = row33b->addArea(_DISP_BUTTONS_LEFT + 3 * (_DISP_BUTTON_WIDTH + _DISP_BUTTON_DISTANCE), 82, "D.SCAN", fontStyle);
     disp_PSCAN = row33b->addArea(0, 82, "P.SCAN", fontStyle);
-    disp_PSCAN->blink();
+
 //    disp_section3.add(disp_RPT);
 
     // bottom left corner
@@ -821,8 +847,29 @@ void configureClassicDisplayMap(CFontMap* map)
 
     // buttons
     fontStyle.fontColor = CL_RX300_FOREGROUND;
+    for(i = 0; i < 1; i++)
+    {
+        left = _DISP_BUTTONS_LEFT + i * (_DISP_BUTTON_WIDTH + _DISP_BUTTON_DISTANCE);
+        row34->addArea(left, fontStyle, 14, MG_SHT, MG_SHTL, MG_SHTR);
+        row35->addArea(left, fontStyle, 1, MG_SHV);
+        row36->addArea(left, fontStyle, 1, MG_SHV);
+        row37->addArea(left, fontStyle, 1, MG_SHV);
+        row38->addArea(left, fontStyle, 14, MG_SHB, MG_SHBL, MG_SHBR);
+        fontStyle.fontFace = FONT_BASIC;
+        fontStyle.alignment = ALIGN_CENTER;
+        fontStyle.tracking = 2;
+        disp_buttons[i * 2] = row36->addArea(0, 55, "<", fontStyle);
+        row36->addArea(0, 50, "DISC", fontStyle);
+        disp_buttons[i * 2 + 1] = row36->addArea(0, 55, ">", fontStyle);
+        fontStyle.fontFace = FONT_GRAPHICS;
+        fontStyle.tracking = 0;
+        left += _DISP_BUTTON_WIDTH;
+        row35->addArea(left, fontStyle, 1, MG_SHV);
+        row36->addArea(left, fontStyle, 1, MG_SHV);
+        row37->addArea(left, fontStyle, 1, MG_SHV);
+    }
 
-    for(i = 0; i < 4; i++)
+    for(i = 1; i < 4; i++)
     {
         left = _DISP_BUTTONS_LEFT + i * (_DISP_BUTTON_WIDTH + _DISP_BUTTON_DISTANCE);
         row34->addArea(left, fontStyle, 14, MG_SHT, MG_SHTL, MG_SHTR);
@@ -835,14 +882,12 @@ void configureClassicDisplayMap(CFontMap* map)
         fontStyle.tracking = 2;
         disp_buttons[i * 2] = row36->addArea(0, _DISP_BUTTON_WIDTH / 2 - 2, "LABEL_", fontStyle);
         disp_buttons[i * 2 + 1] = row36->addArea(0, _DISP_BUTTON_WIDTH / 2 - 2, "LABEL_", fontStyle);
-
         fontStyle.fontFace = FONT_GRAPHICS;
         fontStyle.tracking = 0;
         left += _DISP_BUTTON_WIDTH;
         row35->addArea(left, fontStyle, 1, MG_SHV);
         row36->addArea(left, fontStyle, 1, MG_SHV);
         row37->addArea(left, fontStyle, 1, MG_SHV);
-
     }
     // bottom right corner
     fontStyle.fontColor = CL_BLACK;

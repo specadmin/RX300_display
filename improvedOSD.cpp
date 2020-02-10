@@ -150,6 +150,13 @@ void CImprovedAreaSet::print3l(const char* str)
             j--;
             size--;
             break;
+        case '\'':
+            str1[j] = _dash;
+            str2[j] = _empty_dot;
+            str3[j] = _empty_dot;
+            j--;
+            size--;
+            break;
         default:
             DSTR("Unknown character");
         }

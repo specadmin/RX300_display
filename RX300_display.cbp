@@ -73,6 +73,7 @@
 		<Unit filename="include/config.h" />
 		<Unit filename="include/fonts.h" />
 		<Unit filename="include/improvedOSD.h" />
+		<Unit filename="include/main.h" />
 		<Unit filename="lib/RTD2660AVR/OSD.cpp" />
 		<Unit filename="lib/RTD2660AVR/OSD.h" />
 		<Unit filename="lib/RTD2660AVR/PLL.cpp" />
@@ -115,6 +116,9 @@
 		<Unit filename="lib/avr-misc/avr-misc.cpp" />
 		<Unit filename="lib/avr-misc/avr-misc.h" />
 		<Unit filename="lib/avr-misc/macro.h" />
+		<Unit filename="lib/toyota-mpx/mpx.cpp" />
+		<Unit filename="lib/toyota-mpx/mpx.h" />
+		<Unit filename="lib/toyota-mpx/mpx_config.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

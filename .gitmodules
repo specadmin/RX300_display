@@ -7,3 +7,6 @@
 [submodule "lib/RTD2660AVR"]
 	path = lib/RTD2660AVR
 	url = https://github.com/specadmin/RTD2660AVR
+[submodule "lib/toyota-mpx"]
+	path = lib/toyota-mpx
+	url = https://github.com/specadmin/toyota-mpx

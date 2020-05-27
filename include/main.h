@@ -190,9 +190,6 @@ CFontArea*          disp_tripCompUnit;
 CFontAreaSet        disp_outsideTemp;
 CImprovedAreaSet    disp_outsideTempValue;
 
-CImprovedAreaSet    disp_clockH;
-CImprovedAreaSet    disp_clockM;
-
 CFontAreaSet        disp_car;
 
 CFontAreaSet        disp_insideTemp;

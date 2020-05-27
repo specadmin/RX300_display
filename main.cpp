@@ -2,15 +2,15 @@
 #include <stdio.h>
 #include <avr/pgmspace.h>
 #include "avr-misc/avr-misc.h"
-#include "I2C/twi.h"
-#include "RTC/ds3231.h"
+#include "avr-twi/twi.h"
+#include "DS3231/ds3231.h"
 #include "avr-debug/debug.h"
 #include "toyota-mpx/mpx.h"
 #include "RTD2660AVR/display.h"
 #include "improvedOSD.h"
 #include "main.h"
 #include "data.h"
-#include "time.h"
+#include "clock.h"
 //-----------------------------------------------------------------------------
 BYTE brightnessMode = 0;
 BYTE tripMode = TRIP_TIME;
@@ -24,8 +24,6 @@ BYTE_DATA outsideTemp;
 BYTE_DATA climateEnabled;
 BYTE_DATA ignition;
 BYTE_DATA blowerSpeed;
-BYTE_DATA time_hours;
-BYTE_DATA time_minutes;
 WORD_DATA vehicleStatus;
 WORD_DATA averageVehicleSpeed;
 WORD_DATA blowMode;
@@ -325,44 +323,11 @@ int main()
     disp_tripCompValue.print("17.4");
     disp_outsideTempValue.print("24");
 
-//    disp_insideTemp.print("HOT");
-    //disp_AMPM.hide();
-    //disp_alarm.hide();
-    disp_clockH.print("23");
-    disp_clockM.print("57");
 
     disp_tripCompUnit->print(L100KM);
 
 
 
-    //disp_brightness.hide();
-
-//    disp_scale[5].hide();
-//    disp_scale[6].hide();
-
-//    delay(1);
-//
-//    delay(1);
-//
-//    //OSD.hide();
-//    AMPM->print("PM");
-
-//    delay(2);
-//
-//    alarm.blink();
-//    delay(4);
-//    alarm.show();
-//
-//    delay(2);
-////    AMPM->print("PM");
-//    alarm.hide();
-//    delay(4);
-////    AMPM->print("");
-//    alarm.show();
-//
-//    delay(4);
-//
-////    alarm.show();
     disp_mediaText1.print("FM1");
     disp_mediaText2.print("4");
     disp_mediaText3.print("26 13'48");
@@ -395,36 +360,15 @@ int main()
     //OSD.setTransparency(3, BLEND_ALL);
 
 
-
-
-    set_bit(DDRC, 6);
-    set_bit(DDRC, 7);
-
-
-
-//    while(1)
-//    {
-//        set_bit(PORTC, 6);
-//        disp_insideTempValue.print("23.4");
-//        clr_bit(PORTC, 6);
-//        mdelay(4);
-//    }
     enable_interrupts();
-
-    RTC_get_time(time_updated);
+    RTC_init();
 
     while(1)
     {
         nop();
         displayClimate();
+        displayClock();
         //displayTripInfo();
-//        switch(readMessage(&data, &dataSize))
-//        {
-//        case MSG_MPX_DATA:
-//            dispatchMPX(data);
-//            break;
-//        }
-//        commitMessage();
     }
 
     return 0;
@@ -546,25 +490,26 @@ void configureClassicDisplay(CFontMap* map)
     disp_outsideTemp.add(row12->addArea(0, 36, DEG_C, fontStyle));
 
     // clock
-    fontStyle.visible = true;
     fontStyle.fontFace = FONT_CRYSTAL;
     fontStyle.alignment = ALIGN_RIGHT;
     fontStyle.tracking = 0;
     disp_clockH.add(row12->addArea(_DISP_CLOCK_LEFT, 100, 6, fontStyle));
     disp_clockH.add(row13->addArea(_DISP_CLOCK_LEFT, 100, 6, fontStyle));
     disp_clockH.add(row14->addArea(_DISP_CLOCK_LEFT, 100, 6, fontStyle));
+    disp_clockH.print("00");
 
     // clock colon
     fontStyle.blinkMode = BLINK_ALL;
-    row12->addArea(_DISP_CLOCK_LEFT + 106, fontStyle, 1, _topDot);
-    row14->addArea(_DISP_CLOCK_LEFT + 106, fontStyle, 1, _botDot);
-
+    disp_clockColon.add(row12->addArea(_DISP_CLOCK_LEFT + 106, fontStyle, 1, _topDot));
+    disp_clockColon.add(row14->addArea(_DISP_CLOCK_LEFT + 106, fontStyle, 1, _botDot));
 
     fontStyle.blinkMode = BLINK_NONE;
     disp_clockM.add(row12->addArea(_DISP_CLOCK_LEFT + 124, 100, 6, fontStyle));
     disp_clockM.add(row13->addArea(_DISP_CLOCK_LEFT + 124, 100, 6, fontStyle));
     disp_clockM.add(row14->addArea(_DISP_CLOCK_LEFT + 124, 100, 6, fontStyle));
+    disp_clockM.print("00");
 
+    fontStyle.visible = true;
     map->addEmptyRow(9);
     rowStyle.tracking = 0;
     fontStyle.tracking = 0;

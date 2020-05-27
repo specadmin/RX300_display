@@ -10,3 +10,9 @@
 [submodule "lib/toyota-mpx"]
 	path = lib/toyota-mpx
 	url = https://github.com/specadmin/toyota-mpx
+[submodule "lib/avr-twi"]
+	path = lib/avr-twi
+	url = https://github.com/specadmin/avr-twi
+[submodule "lib/DS3231"]
+	path = lib/DS3231
+	url = https://github.com/specadmin/DS3231

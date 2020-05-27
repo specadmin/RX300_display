@@ -2,36 +2,41 @@
 #include <stdio.h>
 #include <avr/pgmspace.h>
 #include "avr-misc/avr-misc.h"
+#include "I2C/twi.h"
+#include "RTC/ds3231.h"
 #include "avr-debug/debug.h"
 #include "toyota-mpx/mpx.h"
 #include "RTD2660AVR/display.h"
 #include "improvedOSD.h"
 #include "main.h"
+#include "data.h"
+#include "time.h"
 //-----------------------------------------------------------------------------
-BYTE mpx_buf[10] = { 0x00 };
+BYTE brightnessMode = 0;
+BYTE tripMode = TRIP_TIME;
+char string[10];
 void configureClassicDisplay(CFontMap* map);
 void dispatchMPX(BYTE* data);
+//-----------------------------------------------------------------------------
+BYTE_DATA vehicleSpeed;
+BYTE_DATA insideTemp;
+BYTE_DATA outsideTemp;
+BYTE_DATA climateEnabled;
+BYTE_DATA ignition;
+BYTE_DATA blowerSpeed;
+BYTE_DATA time_hours;
+BYTE_DATA time_minutes;
+WORD_DATA vehicleStatus;
+WORD_DATA averageVehicleSpeed;
+WORD_DATA blowMode;
 //-----------------------------------------------------------------------------
 void onIgnitionOff()
 {
     disp_tripComp.hide();
     disp_tripCompValue.hide();
-
     disp_brightness.hide();
-
-    disp_outsideTemp.hide();
-    disp_outsideTempValue.hide();
-
-    disp_insideTemp.hide();
-    disp_insideTempValue.hide();
-
     disp_fuel.hide();
     disp_fuel_value->hide();
-    disp_fan.hide();
-    disp_scale.hide();
-
-    disp_flowDirection.hide();
-
     disp_media_set.hide();
 }
 //-----------------------------------------------------------------------------
@@ -46,179 +51,257 @@ void hideCar()
 }
 //-----------------------------------------------------------------------------
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-void mpxReceiver(BYTE size, const BYTE* buf)
+void mpxReceiver(BYTE size, const BYTE* mpx_buf)
 {
-    memcpy(mpx_buf, buf, size);
+    switch(mpx_buf[2])
+    {
+    case 0x24:
+        vehicleStatus = mpx_buf[3] << 8 | mpx_buf[4];
+        break;
+    case 0x25:
+        vehicleSpeed = mpx_buf[3];
+        break;
+    case 0x26:
+        averageVehicleSpeed = mpx_buf[3] << 8 | mpx_buf[4];
+        break;
+    case 0xCD:
+        outsideTemp = mpx_buf[3];
+        break;
+    case 0x1B:
+        blowerSpeed = mpx_buf[3];
+        break;
+    case 0xFC:
+        blowMode = mpx_buf[3] << 8 | mpx_buf[4];
+        break;
+    case 0xFD:
+        if(mpx_buf[3] < 0x38)
+        {
+            climateEnabled = 1;
+            insideTemp = mpx_buf[3];
+        }
+        else
+        {
+            climateEnabled = 0;
+        }
+        break;
+    }
+}
+
+//-----------------------------------------------------------------------------
+__inline void displayTripInfo()
+{
+    register BYTE tmp;
+    // cruise information visibility
+    if(vehicleStatus.value & 0x80)
+    {
+        disp_tripComp.show();
+        disp_tripCompValue.show();
+    }
+    else
+    {
+        // TODO: сохранить trip в EEPROM при выключении зажигания
+        disp_tripComp.hide();
+        disp_tripCompValue.hide();
+    }
+    switch(tripMode)
+    {
+    case TRIP_AVG_SPEED:
+    case TRIP_TIME:
+    case TRIP_FUEL:
+    case TRIP_AVG_FUEL:
+    case TRIP_SPEED:
+        disp_tripCompCaption->print("SP");
+        disp_tripCompUnit->print(KMPH);
+        if(vehicleSpeed.updated)
+        {
+            vehicleSpeed.updated = 0;
+            tmp = vehicleSpeed.value;
+            sprintf(string, "%d", tmp);
+            disp_tripCompValue.print(string);
+
+        }
+    }
 }
 //-----------------------------------------------------------------------------
-__inline void displayInsideTemp(BYTE data)
+__inline void displayClimate()
 {
-    static BYTE prevData = 0xFF;
-    //DHEX8(1, data);
-    if(data == prevData)
-    {
-        return;
-    }
-
-    //DHEX(data);
     static const char inTemp[][5] = {   "COLD", "16.5", "17.0", "17.5", "18.0", "18.5", "19.0", "19.5", "20.0", "20.5", "21.0",
                                         "21.5", "22.0", "22.5", "23.0", "23.5", "24.0", "24.5", "25.0", "25.5", "26.0", "26.5",
                                         "27.0", "27.5", "28.0", "28.5", "29.0", "29.5", "30.0", "30.5", "31.0", "31.5", "32.0",
                                         "32.5", "33.0", "33.5", "34.0", "34.5", "35.0", "35.5", "36.0", "36.5", "37.0", "37.5",
                                         "38.0", "38.5", "39.0" };
-    if(mpx_buf[3] > 0x37)
+    register BYTE tmp;
+    register WORD wtmp;
+
+    // climate visibility
+    if(!(vehicleStatus.value & 0x80))
     {
-        disp_insideTemp.hide();
-        disp_insideTempValue.hide();
-        disp_auto.hide();
+        disp_flowDirection.hide();
+        disp_outsideTemp.hide();
+        disp_outsideTempValue.hide();
+        climateEnabled = 0;
+
     }
-    else
+
+    // climate enabled
+    if(climateEnabled.updated)
     {
-        //disp_insideTemp.show();
-        //disp_insideTempValue.show();
-        if(data > 0x30)
+        if(climateEnabled)
         {
-            disp_insideTempValue.print("HOT");
+            disp_insideTemp.show();
+            disp_insideTempValue.show();
+            if(!brightnessMode)
+            {
+                disp_scaleHolder.show();
+                disp_fan.show();
+            }
         }
         else
         {
-            disp_insideTempValue.print(inTemp[data]);
+            disp_insideTemp.hide();
+            disp_insideTempValue.hide();
+            if(!brightnessMode)
+            {
+                disp_fan.hide();
+                disp_scale.hide();
+            }
         }
-
-        if((data == 0) || data > 0x30)
+    }
+    // outside temp
+    if(outsideTemp.updated)
+    {
+        outsideTemp.updated = 0;
+        tmp = outsideTemp.value;
+        if(tmp)
         {
-            disp_insideTempCaption->print("MAX");
+            disp_outsideTemp.show();
+            disp_outsideTempValue.show();
         }
         else
         {
-            disp_insideTempCaption->print("TEMP");
+            disp_outsideTemp.hide();
+            disp_outsideTempValue.hide();
+            return;
         }
-    }
-    prevData = data;
-}
-//-----------------------------------------------------------------------------
-__inline void displayBlowMode(WORD data)
-{
-    static BYTE prevData = 0xFF;
-    if(data == prevData)
-    {
-        return;
-    }
-    prevData = data;
-    if(data)
-    {
-        disp_body.show();
-        disp_scaleHolder.show();
-    }
-
-    // auto
-    if(data & 0x8000)
-    {
-        disp_auto.show();
-    }
-    else
-    {
-        disp_auto.hide();
-    }
-
-    // windshield
-    if((data & 0x1000) || (data & 0x0040))
-    {
-        disp_windShield.show();
-    }
-    else
-    {
-        disp_windShield.hide();
-    }
-
-    // feet
-    if((data & 0x0100) || (data & 0x0020) || (data & 0x0040))
-    {
-        disp_feetArrow.show();
-    }
-    else
-    {
-        disp_feetArrow.hide();
-    }
-
-    // head
-    if((data & 0x0100) || (data & 0x0080))
-    {
-        disp_headArrow.show();
-    }
-    else
-    {
-        disp_headArrow.hide();
-    }
-}
-//-----------------------------------------------------------------------------
-__inline void displayBlowerSpeed(BYTE data)
-{
-    static BYTE prevData = 0xFF;
-    if(data == prevData)
-    {
-        return;
-    }
-    prevData = data;
-    //DHEX(data);
-    data >>= 5;
-    if(data > 0)
-    {
-        disp_scaleHolder.show();
-    }
-    for(BYTE i = 0; i < 7; i++)
-    {
-        if(data > i)
+        if(tmp != outsideTemp.prevValue)
         {
-            disp_scaleValue[i].show();
-        }
-        else
-        {
-            disp_scaleValue[i].hide();
+            sprintf(string, "%d", tmp - 48);
+            disp_outsideTempValue.print(string);
         }
     }
-}
-//-----------------------------------------------------------------------------
-void dispatchMPX()
-{
-//    static char str[10];
-    if(mpx_buf[0])
+
+
+    // target inside temperature
+    if(insideTemp.updated)
     {
-        set_bit(PORTC, 7);
-        switch(mpx_buf[2])
+        insideTemp.updated = 0;
+        tmp = insideTemp.value;
+        if(tmp != insideTemp.prevValue)
         {
-//        case 0x24:  // vehicle status
-//            if((mpx_buf[4] & 0x80) == 0)
-//            {
-//                onIgnitionOff();
-//            }
-//            break;
-        case 0xCD:  // outside temperature
-            //disp_outsideTemp.show();
-            //disp_outsideTempValue.show();
-            break;
-            DHEX(mpx_buf[3]);
-            //sprintf(str, "%d", (char) mpx_buf[3]);
-            //disp_outsideTempValue.print(str);
-            break;
-        case 0x1B:  // climate: blower speed
-            displayBlowerSpeed(mpx_buf[3]);
-            break;
-        case 0xFC:  // climate: blow mode
-            //displayBlowMode(mpx_buf[3] << 8 | mpx_buf[4]);
-            break;
-        case 0xFD:  // climate: target inside temperature
-            displayInsideTemp(mpx_buf[3]);
-            break;
+
+            insideTemp.prevValue = tmp;
+            if(tmp > 0x30)
+            {
+                disp_insideTempValue.print("HOT");
+            }
+            else
+            {
+                disp_insideTempValue.print(inTemp[tmp]);
+            }
+
+            if((tmp == 0) || tmp > 0x30)
+            {
+                disp_insideTempCaption->print("MAX");
+            }
+            else
+            {
+                disp_insideTempCaption->print("TEMP");
+            }
         }
-        mpx_buf[0] = 0;
-        clr_bit(PORTC, 7);
+    }
+
+    // blower speed
+    if(blowerSpeed.updated && blowerSpeed.value != blowerSpeed.prevValue && climateEnabled && !brightnessMode)
+    {
+        blowerSpeed.updated = 0;
+        tmp = blowerSpeed.value;
+        blowerSpeed.prevValue = tmp;
+
+        tmp >>= 5;
+
+        for(BYTE i = 0; i < 7; i++)
+        {
+            if(tmp > i)
+            {
+                disp_scaleValue[i].show();
+            }
+            else
+            {
+                disp_scaleValue[i].hide();
+            }
+        }
+    }
+
+    // blowing mode
+    if(blowMode.updated)
+    {
+        blowMode.updated = 0;
+        wtmp = blowMode.value;
+        if(wtmp)
+        {
+            disp_body.show();
+        }
+        if(wtmp != blowMode.prevValue)
+        {
+            blowMode.prevValue = wtmp;
+            // auto
+            if(wtmp & 0x8000)
+            {
+                disp_auto.show();
+            }
+            else
+            {
+                disp_auto.hide();
+            }
+
+            // windshield
+            if((wtmp & 0x1000) || (wtmp & 0x0040))
+            {
+                disp_windShield.show();
+            }
+            else
+            {
+                disp_windShield.hide();
+            }
+
+            // feet
+            if((wtmp & 0x0100) || (wtmp & 0x0020) || (wtmp & 0x0040))
+            {
+                disp_feetArrow.show();
+            }
+            else
+            {
+                disp_feetArrow.hide();
+            }
+
+            // head
+            if((wtmp & 0x0100) || (wtmp & 0x0080))
+            {
+                disp_headArrow.show();
+            }
+            else
+            {
+                disp_headArrow.hide();
+            }
+        }
     }
 }
+
 //-----------------------------------------------------------------------------
 int main()
 {
     DEBUG_INIT();
+    twi_init();
     struct DisplayConfig config;
     config.backgroundColor = 0x000000;
     display.init(config);
@@ -313,29 +396,28 @@ int main()
 
 
 
-    //enable_interrupts();
 
-
-
-//    BYTE* data;
-//    BYTE dataSize;
     set_bit(DDRC, 6);
     set_bit(DDRC, 7);
 
-    disp_insideTemp.show();
-    disp_insideTempValue.show();
+
+
+//    while(1)
+//    {
+//        set_bit(PORTC, 6);
+//        disp_insideTempValue.print("23.4");
+//        clr_bit(PORTC, 6);
+//        mdelay(4);
+//    }
+    enable_interrupts();
+
+    RTC_get_time(time_updated);
 
     while(1)
     {
-        set_bit(PORTC, 6);
-        disp_insideTempValue.print("23.4");
-        clr_bit(PORTC, 6);
-        mdelay(4);
-    }
-    while(1)
-    {
         nop();
-        dispatchMPX();
+        displayClimate();
+        //displayTripInfo();
 //        switch(readMessage(&data, &dataSize))
 //        {
 //        case MSG_MPX_DATA:

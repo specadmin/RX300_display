@@ -120,6 +120,15 @@ enum
     MSG_SHOW_FAN_SPEED,
 };
 //-----------------------------------------------------------------------------
+enum
+{
+    TRIP_TIME,
+    TRIP_SPEED,
+    TRIP_AVG_SPEED,
+    TRIP_FUEL,
+    TRIP_AVG_FUEL
+};
+//-----------------------------------------------------------------------------
 #define DEG_C   "\003\004"
 #define KMPH    "\004\005\006\007"
 #define L100KM  "\003\006\002\001\001\004\005"
@@ -168,6 +177,7 @@ const BYTE PROGMEM pallete[CL_SIZE][3]=
 #define FRONT_RIGHT                 1
 #define REAR_LEFT                   2
 #define REAR_RIGHT                  3
+
 //-----------------------------------------------------------------------------
 CFontAreaSet        disp_media_set;
 CFontAreaSet        disp_alarm;

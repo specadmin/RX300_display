@@ -1,16 +1,15 @@
-#ifndef TIME_INCLUDED
-#define TIME_INCLUDED
+#ifndef TRIPCOMP_INCLUDED
+#define TRIPCOMP_INCLUDED
 //-----------------------------------------------------------------------------
+#include "avr-misc/avr-misc.h"
 #include "lib/RTD2660AVR/OSD.h"
 #include "improvedOSD.h"
 //-----------------------------------------------------------------------------
-void RTC_init();
-void alarms_receiever(BYTE alarms);
-void displayClock();
+void displayTripInfo();
 //-----------------------------------------------------------------------------
-extern CImprovedAreaSet     disp_clockH;
-extern CImprovedAreaSet     disp_clockM;
-extern CFontAreaSet         disp_clockColon;
-extern CFontAreaSet         disp_alarm;
+extern CFontAreaSet        disp_tripComp;
+extern CFontArea*          disp_tripCompCaption;
+extern CImprovedAreaSet    disp_tripCompValue;
+extern CFontArea*          disp_tripCompUnit;
 //-----------------------------------------------------------------------------
 #endif

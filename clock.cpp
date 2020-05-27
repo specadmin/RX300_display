@@ -14,6 +14,7 @@ static char         str[3] = { 0, 0, 0 };
 CImprovedAreaSet    disp_clockH;
 CImprovedAreaSet    disp_clockM;
 CFontAreaSet        disp_clockColon;
+CFontAreaSet        disp_alarm;
 //-----------------------------------------------------------------------------
 void time_changed(__unused BYTE result, BYTE time[3])
 {

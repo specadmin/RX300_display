@@ -119,19 +119,8 @@ enum
     MSG_IEBUS_DATA,
     MSG_SHOW_FAN_SPEED,
 };
+
 //-----------------------------------------------------------------------------
-enum
-{
-    TRIP_TIME,
-    TRIP_SPEED,
-    TRIP_AVG_SPEED,
-    TRIP_FUEL,
-    TRIP_AVG_FUEL
-};
-//-----------------------------------------------------------------------------
-#define DEG_C   "\003\004"
-#define KMPH    "\004\005\006\007"
-#define L100KM  "\003\006\002\001\001\004\005"
 #define KM      "\004\005"
 #define UP      "\006"
 #define DOWN    "\007"
@@ -179,60 +168,5 @@ const BYTE PROGMEM pallete[CL_SIZE][3]=
 #define REAR_RIGHT                  3
 
 //-----------------------------------------------------------------------------
-CFontAreaSet        disp_media_set;
-CFontAreaSet        disp_alarm;
 
-CFontAreaSet        disp_tripComp;
-CFontArea*          disp_tripCompCaption;
-CImprovedAreaSet    disp_tripCompValue;
-CFontArea*          disp_tripCompUnit;
-
-CFontAreaSet        disp_outsideTemp;
-CImprovedAreaSet    disp_outsideTempValue;
-
-CFontAreaSet        disp_car;
-
-CFontAreaSet        disp_insideTemp;
-CFontArea*          disp_insideTempCaption;
-CImprovedAreaSet    disp_insideTempValue;
-
-CFontAreaSet        disp_brightness;
-CFontAreaSet        disp_fan;
-CFontAreaSet        disp_scaleHolder;
-CFontAreaSet        disp_scale;
-CFontAreaSet        disp_scaleValue[7];
-
-CFontAreaSet        disp_body;
-CFontAreaSet        disp_flowDirection;
-CFontAreaSet        disp_windShield;
-CFontAreaSet        disp_auto;
-CFontAreaSet        disp_headArrow;
-CFontAreaSet        disp_feetArrow;
-
-CImprovedAreaSet    disp_mediaText1;
-CImprovedAreaSet    disp_mediaText2;
-CImprovedAreaSet    disp_mediaText3;
-
-CFontArea*          disp_buttons[8];
-
-CFontAreaSet        disp_doors;
-CFontArea*          disp_door_FL;
-CFontArea*          disp_door_BL;
-CFontArea*          disp_door_FBL;
-CFontArea*          disp_door_FR;
-CFontArea*          disp_door_BR;
-CFontArea*          disp_door_FBR;
-
-CFontAreaSet        disp_fuel;
-CFontArea*          disp_fuel_value;
-
-CFontAreaSet        disp_tire[4];
-CFontArea*          disp_tire_value[4];
-
-CFontArea*          disp_RPT;
-CFontArea*          disp_SKIP;
-CFontArea*          disp_RAND;
-CFontArea*          disp_DSCAN;
-CFontArea*          disp_PSCAN;
-//-----------------------------------------------------------------------------
-#endif // MAIN_H
+#endif

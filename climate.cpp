@@ -90,7 +90,7 @@ void displayClimate()
             disp_outsideTempValue.hide();
             return;
         }
-        if(tmp != outsideTemp.prevValue)
+        if(outsideTemp.changed())
         {
             sprintf(string, "%d", tmp - 48);
             disp_outsideTempValue.print(string);
@@ -103,10 +103,9 @@ void displayClimate()
     {
         insideTemp.updated = 0;
         tmp = insideTemp.value;
-        if(tmp != insideTemp.prevValue)
+        if(insideTemp.changed())
         {
 
-            insideTemp.prevValue = tmp;
             if(tmp > 0x30)
             {
                 disp_insideTempValue.print("HOT");
@@ -128,14 +127,10 @@ void displayClimate()
     }
 
     // blower speed
-    if(blowerSpeed.updated && blowerSpeed.value != blowerSpeed.prevValue && climateEnabled && !brightnessMode)
+    if(blowerSpeed.updated && blowerSpeed.changed() && climateEnabled && !brightnessMode)
     {
         blowerSpeed.updated = 0;
-        tmp = blowerSpeed.value;
-        blowerSpeed.prevValue = tmp;
-
-        tmp >>= 5;
-
+        tmp = blowerSpeed.value >> 5;
         for(BYTE i = 0; i < 7; i++)
         {
             if(tmp > i)
@@ -158,9 +153,8 @@ void displayClimate()
         {
             disp_body.show();
         }
-        if(wtmp != blowMode.prevValue)
+        if(blowMode.changed())
         {
-            blowMode.prevValue = wtmp;
             // auto
             if(wtmp & 0x8000)
             {

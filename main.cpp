@@ -84,7 +84,7 @@ int main()
         nop();
         displayClimate();
         displayClock();
-        //displayTripInfo();
+        displayTripInfo();
     }
 
     return 0;
@@ -172,9 +172,13 @@ void configureClassicDisplay(CFontMap* map)
     CFontRow* row14 = map->addRow(18, rowStyle);
 
     // trip computer caption
+    //fontStyle.bgColor = CL_BLUE;
+    fontStyle.alignment = ALIGN_CENTER;
     fontStyle.tracking = 2;
-    disp_tripCompCaption = row12->addArea(X_OFFSET + 2, 50, "AVG", fontStyle);
-    disp_tripComp.add(disp_tripCompCaption);
+    disp_tripCompCaption1 = row12->addArea(X_OFFSET + 2, 64, 5, fontStyle);
+    disp_tripCompCaption2 = row14->addArea(X_OFFSET + 2, 64, 5, fontStyle);
+    disp_tripComp.add(disp_tripCompCaption1);
+    disp_tripComp.add(disp_tripCompCaption2);
 
 
     // trip computer value

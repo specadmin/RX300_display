@@ -3,8 +3,10 @@
 //-----------------------------------------------------------------------------
 struct BYTE_DATA
 {
-    BYTE value;
+private:
     BYTE prevValue;
+public:
+    BYTE value;
     BYTE updated;
     BYTE_DATA()
     {
@@ -21,6 +23,15 @@ struct BYTE_DATA
         value = new_value;
         updated = 1;
     }
+    bool changed()
+    {
+        register bool tmp = (value != prevValue);
+        if(tmp)
+        {
+            prevValue = value;
+        }
+        return tmp;
+    }
     operator bool()
     {
         return (bool) value;
@@ -29,8 +40,10 @@ struct BYTE_DATA
 //-----------------------------------------------------------------------------
 struct WORD_DATA
 {
-    WORD value;
+private:
     WORD prevValue;
+public:
+    WORD value;
     BYTE updated;
     WORD_DATA()
     {
@@ -46,6 +59,23 @@ struct WORD_DATA
     {
         value = new_value;
         updated = 1;
+    }
+    void operator++(int)
+    {
+        value++;
+    }
+    bool changed()
+    {
+        register bool tmp = (value != prevValue);
+        if(tmp)
+        {
+            prevValue = value;
+        }
+        return tmp;
+    }
+    operator bool()
+    {
+        return (bool) value;
     }
 };
 //-----------------------------------------------------------------------------

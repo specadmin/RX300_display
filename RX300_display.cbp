@@ -81,17 +81,27 @@
 			<Add after="avr-size -dBt --common `find . -name &apos;*.o&apos;`" />
 			<Add after="avr-size -C --mcu=$(MCU) -d $(TARGET_OUTPUT_FILE)" />
 		</ExtraCommands>
+		<Unit filename="body.cpp" />
+		<Unit filename="climate.cpp" />
 		<Unit filename="clock.cpp" />
 		<Unit filename="fonts/font-basic.h" />
 		<Unit filename="fonts/font-crystal3.h" />
 		<Unit filename="fonts/font-graphics.h" />
 		<Unit filename="fonts/font-narrow.h" />
+		<Unit filename="global.cpp" />
 		<Unit filename="improvedOSD.cpp" />
+		<Unit filename="include/body.h" />
+		<Unit filename="include/climate.h" />
 		<Unit filename="include/clock.h" />
 		<Unit filename="include/config.h" />
 		<Unit filename="include/data.h" />
 		<Unit filename="include/fonts.h" />
+		<Unit filename="include/global.h" />
 		<Unit filename="include/improvedOSD.h" />
+		<Unit filename="include/main.h" />
+		<Unit filename="include/media.h" />
+		<Unit filename="include/mpx-data.h" />
+		<Unit filename="include/tripComp.h" />
 		<Unit filename="lib/DS3231/ds3231.cpp" />
 		<Unit filename="lib/DS3231/ds3231.h" />
 		<Unit filename="lib/RTD2660AVR/OSD.cpp" />
@@ -144,6 +154,9 @@
 		<Unit filename="lib/toyota-mpx/mpx.h" />
 		<Unit filename="lib/toyota-mpx/mpx_config.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="media.cpp" />
+		<Unit filename="mpx-data.cpp" />
+		<Unit filename="tripComp.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

@@ -8,7 +8,8 @@
 void displayTripInfo();
 //-----------------------------------------------------------------------------
 extern CFontAreaSet        disp_tripComp;
-extern CFontArea*          disp_tripCompCaption;
+extern CFontArea*          disp_tripCompCaption1;
+extern CFontArea*          disp_tripCompCaption2;
 extern CImprovedAreaSet    disp_tripCompValue;
 extern CFontArea*          disp_tripCompUnit;
 //-----------------------------------------------------------------------------

@@ -15,6 +15,7 @@ CImprovedAreaSet    disp_clockH;
 CImprovedAreaSet    disp_clockM;
 CFontAreaSet        disp_clockColon;
 CFontAreaSet        disp_alarm;
+extern WORD_DATA    tripTimer;
 //-----------------------------------------------------------------------------
 void time_changed(__unused BYTE result, BYTE time[3])
 {
@@ -64,6 +65,7 @@ void alarms_receiever(BYTE alarms)
     {
         alarmRings = 1;
     }
+    tripTimer++;
 }
 //-----------------------------------------------------------------------------
 void displayClock()

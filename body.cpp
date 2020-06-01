@@ -3,7 +3,7 @@
 #include "data.h"
 #include "body.h"
 //-----------------------------------------------------------------------------
-BYTE_DATA           ignition;
+BYTE_DATA           ignition = 0;
 CFontAreaSet        disp_car;
 CFontAreaSet        disp_doors;
 CFontArea*          disp_door_FL;

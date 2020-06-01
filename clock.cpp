@@ -32,6 +32,7 @@ __inline void clockHide()
 //-----------------------------------------------------------------------------
 __inline void clockEnable()
 {
+    RTC.enable_SQW_output(RTC_SQW_FREQ_1HZ);
     RTC.alarm2.set_every_minute();
     RTC.get_time_bcd(time_changed);
     // enabe pin-change interrupt
@@ -60,7 +61,10 @@ void RTC_init()
 //-----------------------------------------------------------------------------
 void alarms_receiever(BYTE alarms)
 {
-    RTC.get_time_bcd(time_changed);
+    if(alarms & 0x02)
+    {
+        RTC.get_time_bcd(time_changed);
+    }
     if(alarms & 0x01)
     {
         alarmRings = 1;

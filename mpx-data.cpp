@@ -28,20 +28,20 @@ void mpxReceiver(__unused BYTE size, const BYTE* mpx_buf)
         }
         break;
     case 0x20:
-        fuelRateTime = 778; // mpx_buf[3] << 8 | mpx_buf[4];
+        fuelRateTime = mpx_buf[3] << 8 | mpx_buf[4];
         break;
     case 0x24:
-        speed = 90; // mpx_buf[3];
+        speed = mpx_buf[3];
         ignition = mpx_buf[4] & 0x80;
         break;
     case 0x25:
-        averageSpeed = 684; //mpx_buf[3] << 8 | mpx_buf[4];
+        averageSpeed = mpx_buf[3] << 8 | mpx_buf[4];
         break;
     case 0x90:
-        fuelRateDist = 998; //mpx_buf[3] << 8 | mpx_buf[4];
+        fuelRateDist = mpx_buf[3] << 8 | mpx_buf[4];
         break;
     case 0xA3:
-        averageFuelRate = 107;// mpx_buf[3] << 8 | mpx_buf[4];
+        averageFuelRate = mpx_buf[3] << 8 | mpx_buf[4];
         break;
     case 0xCD:
         outsideTemp = mpx_buf[3];

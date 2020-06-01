@@ -18,14 +18,17 @@ enum
     tripModesCount
 };
 //-----------------------------------------------------------------------------
+static const char   empty_string[] = "---";
 static char         string[10];
 static BYTE_DATA    tripMode = TRIP_MODE_TIME;
+static bool         tripInit = false;
 BYTE_DATA           speed = 0;
 WORD_DATA           tripTimer = 0;
-WORD_DATA           averageSpeed = 0;
-WORD_DATA           fuelRateTime = 0;
-WORD_DATA           fuelRateDist = 0;
-WORD_DATA           averageFuelRate = 0;
+WORD_DATA           tripTimerMinutes = 0;
+WORD_DATA           averageSpeed = -1;
+WORD_DATA           fuelRateTime = -1;
+WORD_DATA           fuelRateDist = -1;
+WORD_DATA           averageFuelRate = -1;
 
 CFontAreaSet        disp_tripComp;
 CFontArea*          disp_tripCompCaption1;
@@ -47,32 +50,60 @@ __inline void display_speed()
 //-----------------------------------------------------------------------------
 __inline void display_average_speed()
 {
-    sprintf(string, "%0d.%0d", averageSpeed.value / 10, averageSpeed.value % 10);
-    disp_tripCompValue.print(string);
+    if((int)averageSpeed.value >= 0)
+    {
+        sprintf(string, "%0d", averageSpeed.value / 10);
+        disp_tripCompValue.print(string);
+    }
+    else
+    {
+        disp_tripCompValue.print(empty_string);
+    }
 }
 //-----------------------------------------------------------------------------
 __inline void display_trip_time()
 {
-    sprintf(string, "%01d%01d", tripTimer.value / 60, tripTimer.value % 60);
+    sprintf(string, "%01d:%02d", (tripTimerMinutes.value / 60) %10, tripTimerMinutes.value % 60);
     disp_tripCompValue.print(string);
 }
 //-----------------------------------------------------------------------------
 __inline void display_fuel_rate_time()
 {
-    sprintf(string, "%0d.%0d", fuelRateTime.value / 10, fuelRateTime.value % 10);
-    disp_tripCompValue.print(string);
+    if((int)fuelRateTime.value >= 0)
+    {
+        sprintf(string, "%0d.%0d", fuelRateTime.value / 10, fuelRateTime.value % 10);
+        disp_tripCompValue.print(string);
+    }
+    else
+    {
+        disp_tripCompValue.print(empty_string);
+    }
 }
 //-----------------------------------------------------------------------------
 __inline void display_fuel_rate_dist()
 {
-    sprintf(string, "%0d.%0d", fuelRateDist.value / 10, fuelRateDist.value % 10);
-    disp_tripCompValue.print(string);
+    if((int)fuelRateDist.value >= 0)
+    {
+        sprintf(string, "%0d.%0d", fuelRateDist.value / 10, fuelRateDist.value % 10);
+        disp_tripCompValue.print(string);
+    }
+    else
+    {
+        disp_tripCompValue.print(empty_string);
+    }
 }
 //-----------------------------------------------------------------------------
 __inline void display_average_fuel_rate()
 {
-    sprintf(string, "%0d.%0d", averageFuelRate.value / 10, averageFuelRate.value % 10);
-    disp_tripCompValue.print(string);
+    if((int)averageFuelRate.value >= 0)
+    {
+        sprintf(string, "%0d.%0d", averageFuelRate.value / 10, averageFuelRate.value % 10);
+        disp_tripCompValue.print(string);
+    }
+    else
+    {
+        disp_tripCompValue.print(empty_string);
+    }
 }
 //-----------------------------------------------------------------------------
 void displayTripInfo()
@@ -82,17 +113,20 @@ void displayTripInfo()
     {
         disp_tripComp.show();
         disp_tripCompValue.show();
+        tripInit = true;
     }
     else
     {
         // TODO: сохранить trip в EEPROM при выключении зажигания
         disp_tripComp.hide();
         disp_tripCompValue.hide();
+        tripTimer.value = 0;
     }
+
     switch(tripMode.value)
     {
     case TRIP_MODE_SPEED:
-        if(tripMode.changed())
+        if(tripMode.changed() || tripInit)
         {
             disp_tripCompCaption1->print("");
             disp_tripCompCaption2->print("SPEED");
@@ -106,7 +140,7 @@ void displayTripInfo()
         }
         break;
     case TRIP_MODE_AVG_SPEED:
-        if(tripMode.changed())
+        if(tripMode.changed() || tripInit)
         {
             disp_tripCompCaption1->print("AVG");
             disp_tripCompCaption2->print("SPEED");
@@ -120,21 +154,25 @@ void displayTripInfo()
         }
         break;
     case TRIP_MODE_TIME:
-        if(tripMode.changed())
+        if(tripMode.changed() || tripInit)
         {
             disp_tripCompCaption1->print("TRIP");
             disp_tripCompCaption2->print("TIME");
             disp_tripCompUnit->print("");
             display_trip_time();
         }
-        if(tripTimer.updated && tripTimer.changed())
+        if(tripTimer.updated)
         {
             tripTimer.updated = 0;
+            tripTimerMinutes = tripTimer.value / 60;
+        }
+        if(tripTimerMinutes.changed())
+        {
             display_trip_time();
         }
         break;
     case TRIP_MODE_FUEL:
-        if(tripMode.changed())
+        if(tripMode.changed() || tripInit)
         {
             disp_tripCompCaption1->print("FUEL");
             disp_tripCompCaption2->print("RATE");
@@ -167,7 +205,7 @@ void displayTripInfo()
         }
         break;
     case TRIP_MODE_AVG_FUEL:
-        if(tripMode.changed())
+        if(tripMode.changed() || tripInit)
         {
             disp_tripCompCaption1->print("AVG");
             disp_tripCompCaption2->print("F/R");
@@ -181,5 +219,6 @@ void displayTripInfo()
         }
         break;
     }
+    tripInit = false;
 }
 //-----------------------------------------------------------------------------

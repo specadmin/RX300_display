@@ -63,6 +63,7 @@ public:
     void operator++(int)
     {
         value++;
+        updated = 1;
     }
     bool changed()
     {

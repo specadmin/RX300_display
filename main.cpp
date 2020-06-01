@@ -81,10 +81,10 @@ int main()
 
     while(1)
     {
-        nop();
         displayClimate();
         displayClock();
         displayTripInfo();
+        //DSTRN(".");
     }
 
     return 0;
@@ -125,8 +125,8 @@ void configureClassicDisplay(CFontMap* map)
     fontStyle.visible = false;
     fontStyle.fontColor = CL_RX300_FOREGROUND;
     disp_tripComp.add(line0top->addArea(0, fontStyle, 23, MG_6PXSKIP, MG_RD8pxTL, MG_RD8pxTR));
-    disp_outsideTemp.add(line0top->addArea(X_OFFSET + 293, fontStyle, 14, MG_6PXSKIP, MG_RD8pxTL, MG_RD8pxTR));
-    disp_alarm.add(line0top->addArea(X_OFFSET + 477, fontStyle, 21, MG_6PXSKIP, MG_RD8pxTL, MG_RD8pxTR));
+    disp_outsideTemp.add(line0top->addArea(X_OFFSET + 293, fontStyle, 15, MG_6PXSKIP, MG_RD8pxTL, MG_RD8pxTR));
+    disp_alarm.add(line0top->addArea(X_OFFSET + 489, fontStyle, 20, MG_6PXSKIP, MG_RD8pxTL, MG_RD8pxTR));
 
     fontStyle.visible = true;
     fontStyle.fontColor = CL_BLACK;
@@ -144,9 +144,9 @@ void configureClassicDisplay(CFontMap* map)
     disp_tripComp.add(titles1->addArea(X_OFFSET + 2, 276, "CRUISE INFORMATION", fontStyle));
 
     fontStyle.tracking = 0;
-    disp_outsideTemp.add(titles1->addArea(X_OFFSET + 293, 168, "OUTSIDE TEMP", fontStyle));
+    disp_outsideTemp.add(titles1->addArea(X_OFFSET + 293, 180, "OUTSIDE TEMP", fontStyle));
 
-    disp_alarm.add(titles1->addArea(X_OFFSET + 477, 252, "ALARM", fontStyle));
+    disp_alarm.add(titles1->addArea(X_OFFSET + 489, 240, "ALARM", fontStyle));
 
     rowStyle.tracking = 0;
     CFontRow* line0bot = map->addRow(4, rowStyle);
@@ -156,8 +156,8 @@ void configureClassicDisplay(CFontMap* map)
     fontStyle.bgColor = CL_TRANSPARENT;
     fontStyle.fontFace = FONT_GRAPHICS;
     disp_tripComp.add(line0bot->addArea(X_OFFSET + 2, fontStyle, 23, MG_FILL, MG_RD8pxBL, MG_RD8pxBR));
-    disp_outsideTemp.add(line0bot->addArea(X_OFFSET + 293, fontStyle, 14, MG_FILL, MG_RD8pxBL, MG_RD8pxBR));
-    disp_alarm.add(line0bot->addArea(X_OFFSET + 477, fontStyle, 21, MG_FILL, MG_RD8pxBL, MG_RD8pxBR));
+    disp_outsideTemp.add(line0bot->addArea(X_OFFSET + 293, fontStyle, 15, MG_FILL, MG_RD8pxBL, MG_RD8pxBR));
+    disp_alarm.add(line0bot->addArea(X_OFFSET + 489, fontStyle, 20, MG_FILL, MG_RD8pxBL, MG_RD8pxBR));
 
     map->addEmptyRow(22);
 
@@ -175,8 +175,8 @@ void configureClassicDisplay(CFontMap* map)
     //fontStyle.bgColor = CL_BLUE;
     fontStyle.alignment = ALIGN_CENTER;
     fontStyle.tracking = 2;
-    disp_tripCompCaption1 = row12->addArea(X_OFFSET + 2, 64, 5, fontStyle);
-    disp_tripCompCaption2 = row14->addArea(X_OFFSET + 2, 64, 5, fontStyle);
+    disp_tripCompCaption1 = row12->addArea(X_OFFSET + 2, 62, 5, fontStyle);
+    disp_tripCompCaption2 = row14->addArea(X_OFFSET + 2, 62, 5, fontStyle);
     disp_tripComp.add(disp_tripCompCaption1);
     disp_tripComp.add(disp_tripCompCaption2);
 
@@ -185,9 +185,9 @@ void configureClassicDisplay(CFontMap* map)
     fontStyle.fontFace = FONT_CRYSTAL;
     fontStyle.alignment = ALIGN_RIGHT;
     fontStyle.tracking = 0;
-    disp_tripCompValue.add(row12->addArea(X_OFFSET + 70, 120, 10, fontStyle));
-    disp_tripCompValue.add(row13->addArea(X_OFFSET + 70, 120, 10, fontStyle));
-    disp_tripCompValue.add(row14->addArea(X_OFFSET + 70, 120, 10, fontStyle));
+    disp_tripCompValue.add(row12->addArea(X_OFFSET + 68, 120, 11, fontStyle));
+    disp_tripCompValue.add(row13->addArea(X_OFFSET + 68, 120, 11, fontStyle));
+    disp_tripCompValue.add(row14->addArea(X_OFFSET + 68, 120, 11, fontStyle));
 
     fontStyle.fontFace = FONT_NARROW;
     fontStyle.alignment = ALIGN_LEFT;
@@ -200,9 +200,9 @@ void configureClassicDisplay(CFontMap* map)
     fontStyle.fontFace = FONT_CRYSTAL;
     fontStyle.alignment = ALIGN_RIGHT;
     fontStyle.tracking = 0;
-    disp_outsideTempValue.add(row12->addArea(X_OFFSET + 325, 100, 9, fontStyle));
-    disp_outsideTempValue.add(row13->addArea(X_OFFSET + 325, 100, 9, fontStyle));
-    disp_outsideTempValue.add(row14->addArea(X_OFFSET + 325, 100, 9, fontStyle));
+    disp_outsideTempValue.add(row12->addArea(X_OFFSET + 315, 100, 9, fontStyle));
+    disp_outsideTempValue.add(row13->addArea(X_OFFSET + 315, 100, 9, fontStyle));
+    disp_outsideTempValue.add(row14->addArea(X_OFFSET + 315, 100, 9, fontStyle));
 
 
     fontStyle.fontFace = FONT_GRAPHICS;

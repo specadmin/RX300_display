@@ -153,7 +153,7 @@ const BYTE PROGMEM pallete[CL_SIZE][3]=
 #define _DISP_AUTO_LEFT             (X_OFFSET + 530)
 #define _DISP_WSHIELD_LEFT          (X_OFFSET + 555)
 #define _DISP_BODY_LEFT             (X_OFFSET + 627)
-#define _DISP_CAR_LEFT              (X_OFFSET + 70)
+#define _DISP_CAR_LEFT              (X_OFFSET + 80)
 #define _DISP_HEAD_ARROW_LEFT       (_DISP_BODY_LEFT + 14)
 #define _DISP_LEGS_ARROW_LEFT       (_DISP_BODY_LEFT - 18)
 #define _DISP_BUTTON_WIDTH          164

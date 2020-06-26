@@ -37,6 +37,7 @@
 			</Target>
 			<Environment>
 				<Variable name="ADAPTER" value="usbasp" />
+				<Variable name="FUSES" value="-U hfuse:w:0xD1:m -U lfuse:w:0xE7:m -U efuse:w:0xFC:m" />
 			</Environment>
 		</Build>
 		<Compiler>
@@ -101,7 +102,9 @@
 		<Unit filename="include/main.h" />
 		<Unit filename="include/media.h" />
 		<Unit filename="include/mpx-data.h" />
+		<Unit filename="include/options.h" />
 		<Unit filename="include/tripComp.h" />
+		<Unit filename="include/units.h" />
 		<Unit filename="lib/DS3231/ds3231.cpp" />
 		<Unit filename="lib/DS3231/ds3231.h" />
 		<Unit filename="lib/RTD2660AVR/OSD.cpp" />
@@ -156,7 +159,9 @@
 		<Unit filename="main.cpp" />
 		<Unit filename="media.cpp" />
 		<Unit filename="mpx-data.cpp" />
+		<Unit filename="options.cpp" />
 		<Unit filename="tripComp.cpp" />
+		<Unit filename="units.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

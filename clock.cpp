@@ -4,6 +4,9 @@
 #include "DS3231/ds3231.h"
 #include "data.h"
 #include "clock.h"
+#include "body.h"
+#include "tripComp.h"
+#include "options.h"
 //-----------------------------------------------------------------------------
 static BYTE_DATA    hours;
 static BYTE_DATA    minutes;
@@ -15,12 +18,13 @@ CImprovedAreaSet    disp_clockH;
 CImprovedAreaSet    disp_clockM;
 CFontAreaSet        disp_clockColon;
 CFontAreaSet        disp_alarm;
-extern WORD_DATA    tripTimer;
+extern BYTE FPS;
 //-----------------------------------------------------------------------------
-void time_changed(__unused BYTE result, BYTE time[3])
+void time_changed(__unused BYTE result, BYTE datetime[7])
 {
-    hours = time[HOUR];
-    minutes = time[MIN];
+    hours = datetime[HOUR];
+    minutes = datetime[MIN];
+    tripDay = datetime[DAY];
 }
 //-----------------------------------------------------------------------------
 __inline void clockHide()
@@ -34,7 +38,7 @@ __inline void clockEnable()
 {
     RTC.enable_SQW_output(RTC_SQW_FREQ_1HZ);
     RTC.alarm2.set_every_minute();
-    RTC.get_time_bcd(time_changed);
+    RTC.get_datetime_bcd(time_changed);
     // enabe pin-change interrupt
     set_bit(PCMSK0, PCINT0);
     set_bit(PCIFR, PCIF0);
@@ -70,6 +74,15 @@ void alarms_receiever(BYTE alarms)
         alarmRings = 1;
     }
     tripTimer++;
+    if(selectorAT & 0x1F)
+    {
+        totalDriveTime++;
+    }
+    if(options.showFPS)
+    {
+        DVAR(FPS);
+        FPS = 0;
+    }
 }
 //-----------------------------------------------------------------------------
 void displayClock()

@@ -51,6 +51,8 @@
 #define MPX_RX_LED_DIR      DDRB
 #define MPX_RX_LED_BIT      0
 
+#define MPX_TIMER_ID        0
+
 #define OSD_MAX_ROWS_COUNT  34
 
 //----------------------------------------------------------------------------

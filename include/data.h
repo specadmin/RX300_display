@@ -1,5 +1,7 @@
-#ifndef DATA_INCLUDED
-#define DATA_INCLUDED
+#ifndef DATA_H
+#define DATA_H
+//-----------------------------------------------------------------------------
+#include "lib/avr-misc/avr-misc.h"
 //-----------------------------------------------------------------------------
 struct BYTE_DATA
 {
@@ -32,9 +34,9 @@ public:
         }
         return tmp;
     }
-    operator bool()
+    operator BYTE()
     {
-        return (bool) value;
+        return value;
     }
 };
 //-----------------------------------------------------------------------------
@@ -74,10 +76,52 @@ public:
         }
         return tmp;
     }
-    operator bool()
+    operator WORD()
     {
-        return (bool) value;
+        return value;
     }
 };
 //-----------------------------------------------------------------------------
-#endif // DATA_H_INCLUDED
+struct DWORD_DATA
+{
+private:
+    DWORD prevValue;
+public:
+    DWORD value;
+    BYTE updated;
+    DWORD_DATA()
+    {
+        value = 0xFFFFFFFF;
+        prevValue = 0xFFFFFFFF;
+        updated = 0;
+    }
+    DWORD_DATA(WORD new_value)
+    {
+        value = new_value;
+    }
+    void operator=(DWORD new_value)
+    {
+        value = new_value;
+        updated = 1;
+    }
+    void operator++(int)
+    {
+        value++;
+        updated = 1;
+    }
+    bool changed()
+    {
+        register bool tmp = (value != prevValue);
+        if(tmp)
+        {
+            prevValue = value;
+        }
+        return tmp;
+    }
+    operator DWORD()
+    {
+        return value;
+    }
+};
+//-----------------------------------------------------------------------------
+#endif

@@ -7,6 +7,8 @@
 #define DEG_C   "\003\004"
 //-----------------------------------------------------------------------------
 void displayClimate();
+void hideClimate();
+void tuneClimate();
 //-----------------------------------------------------------------------------
 extern CFontAreaSet        disp_outsideTemp;
 extern CImprovedAreaSet    disp_outsideTempValue;

@@ -6,6 +6,7 @@
 #include "improvedOSD.h"
 //-----------------------------------------------------------------------------
 void hideCar();
+void showCar();
 //-----------------------------------------------------------------------------
 extern CFontAreaSet        disp_car;
 extern CFontAreaSet        disp_doors;
@@ -19,5 +20,7 @@ extern CFontAreaSet        disp_fuel;
 extern CFontArea*          disp_fuel_value;
 extern CFontAreaSet        disp_tire[4];
 extern CFontArea*          disp_tire_value[4];
+extern BYTE_DATA           ignition;
+extern BYTE_DATA           selectorAT;
 //-----------------------------------------------------------------------------
 #endif

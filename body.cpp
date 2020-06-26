@@ -2,8 +2,10 @@
 #include "avr-debug/debug.h"
 #include "data.h"
 #include "body.h"
+#include "climate.h"
 //-----------------------------------------------------------------------------
 BYTE_DATA           ignition = 0;
+BYTE_DATA           selectorAT = 0;
 CFontAreaSet        disp_car;
 CFontAreaSet        disp_doors;
 CFontArea*          disp_door_FL;
@@ -17,14 +19,6 @@ CFontArea*          disp_fuel_value;
 CFontAreaSet        disp_tire[4];
 CFontArea*          disp_tire_value[4];
 //-----------------------------------------------------------------------------
-void onIgnitionOff()
-{
-
-    disp_fuel.hide();
-    disp_fuel_value->hide();
-    // disp_media_set.hide();
-}
-//-----------------------------------------------------------------------------
 void hideCar()
 {
     disp_car.hide();
@@ -33,5 +27,10 @@ void hideCar()
         disp_tire[i].hide();
         disp_doors.hide();
     }
+}
+//-----------------------------------------------------------------------------
+void showCar()
+{
+    disp_car.show();
 }
 //-----------------------------------------------------------------------------

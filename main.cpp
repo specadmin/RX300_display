@@ -1,6 +1,7 @@
 //-----------------------------------------------------------------------------
 #include <avr/pgmspace.h>
 #include "avr-misc/avr-misc.h"
+#include "options.h"
 #include "avr-twi/twi.h"
 #include "DS3231/ds3231.h"
 #include "avr-debug/debug.h"
@@ -19,10 +20,16 @@
 #include "mpx-data.h"
 //-----------------------------------------------------------------------------
 void configureClassicDisplay(CFontMap* map);
+BYTE FPS = 0;
 //-----------------------------------------------------------------------------
 int main()
 {
+    DDRB = 0x0F; PORTB = 0x0F;
+
     DEBUG_INIT();
+
+
+
     twi_init();
     struct DisplayConfig config;
     config.backgroundColor = 0x000000;
@@ -43,8 +50,8 @@ int main()
 
     //display.hideBackground();
     OSD.show(map1);
-    //halt();
 
+    options.showFPS = 0;
 
 
     //disp_mediaText3.print(" 102.7");
@@ -67,7 +74,7 @@ int main()
     //disp_auto.hide();
     //disp_headArrow.hide();
     //disp_windShield.hide();
-    memory_usage();
+    //memory_usage();
 
 
     //display.showVideo(VS_AV2);
@@ -76,15 +83,22 @@ int main()
     //OSD.setTransparency(3, BLEND_ALL);
 
 
+
+
     enable_interrupts();
+
     RTC_init();
+
+    showCar();
 
     while(1)
     {
-        displayClimate();
         displayClock();
+        displayClimate();
+        calculateAverageSpeed();
         displayTripInfo();
-        //DSTRN(".");
+        tuneClimate();
+        FPS++;
     }
 
     return 0;

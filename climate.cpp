@@ -46,14 +46,14 @@ void displayClimate()
         disp_flowDirection.hide();
         disp_outsideTemp.hide();
         disp_outsideTempValue.hide();
-        climateEnabled = 0;
         disp_brightness.hide();
+        climateEnabled = 0;
     }
 
     // climate enabled
     if(climateEnabled.updated)
     {
-        if(climateEnabled)
+        if(climateEnabled.value)
         {
             disp_insideTemp.show();
             disp_insideTempValue.show();
@@ -196,5 +196,13 @@ void displayClimate()
             }
         }
     }
+}
+//-----------------------------------------------------------------------------
+void tuneClimate()
+{
+    // включаем кондиционер, если целевая температура ниже наружной температуры
+
+    // периодически мигаем кнопкой кондиционера, если целевая температура выше наружной температуры
+    // одновременно меняем цвет наружной температуры на голубой
 }
 //-----------------------------------------------------------------------------

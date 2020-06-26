@@ -11,6 +11,7 @@ struct SUnits
     const char GPH[4] = "\013\006\007";
     const char MPH[4] = "\010\011\012";
     const char MPG[4] = "\010\011\013";
+    const char DEG_C[3] = "\003\004";
 };
 //------------------------------------------------------------------------------
 extern SUnits units;

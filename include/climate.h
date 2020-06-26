@@ -4,8 +4,6 @@
 #include "lib/RTD2660AVR/OSD.h"
 #include "improvedOSD.h"
 //-----------------------------------------------------------------------------
-#define DEG_C   "\003\004"
-//-----------------------------------------------------------------------------
 void displayClimate();
 void hideClimate();
 void tuneClimate();

@@ -3,6 +3,7 @@
 #include "avr-misc/avr-misc.h"
 #include "avr-debug/debug.h"
 #include "data.h"
+#include "body.h"
 #include "climate.h"
 //-----------------------------------------------------------------------------
 static BYTE         brightnessMode = 0;
@@ -28,7 +29,6 @@ CFontAreaSet        disp_windShield;
 CFontAreaSet        disp_auto;
 CFontAreaSet        disp_headArrow;
 CFontAreaSet        disp_feetArrow;
-extern BYTE_DATA    ignition;
 //-----------------------------------------------------------------------------
 void displayClimate()
 {

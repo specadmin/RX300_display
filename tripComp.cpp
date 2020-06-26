@@ -3,6 +3,7 @@
 #include "avr-debug/debug.h"
 #include "tripComp.h"
 #include "units.h"
+#include "body.h"
 #include "options.h"
 //-----------------------------------------------------------------------------
 enum
@@ -40,7 +41,6 @@ CFontArea*          disp_tripCompCaption1;
 CFontArea*          disp_tripCompCaption2;
 CImprovedAreaSet    disp_tripCompValue;
 CFontArea*          disp_tripCompUnit;
-extern BYTE_DATA    ignition;
 //-----------------------------------------------------------------------------
 void tripModeChange()
 {

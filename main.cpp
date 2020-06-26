@@ -221,7 +221,7 @@ void configureClassicDisplay(CFontMap* map)
 
     fontStyle.fontFace = FONT_GRAPHICS;
     fontStyle.alignment = ALIGN_LEFT;
-    disp_outsideTemp.add(row12->addArea(0, 36, DEG_C, fontStyle));
+    disp_outsideTemp.add(row12->addArea(0, 36, units.DEG_C, fontStyle));
 
     // clock
     fontStyle.fontFace = FONT_CRYSTAL;

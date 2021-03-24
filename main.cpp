@@ -37,7 +37,7 @@ int main()
     OSD.setOrigin(0,0);
     OSD.uploadColorPallete((BYTE*)pallete);
 
-    //display.showVideo(VS_AV2);
+
     display.on();
 
     CFontMap* map1 = &OSD.maps[0];
@@ -50,8 +50,11 @@ int main()
 
     //display.hideBackground();
     OSD.show(map1);
+//    mdelay(1000);
+//    OSD.hide();
+//    display.showVideo(VS_AV2); halt();
 
-    options.showFPS = 0;
+    options.showFPS = 1;
 
 
     //disp_mediaText3.print(" 102.7");
@@ -89,15 +92,23 @@ int main()
 
     RTC_init();
 
+     RTC.set_time(8, 21);
+
     showCar();
 
     while(1)
     {
-        displayClock();
-        displayClimate();
-        calculateAverageSpeed();
-        displayTripInfo();
-        tuneClimate();
+        displayGlobal();
+        switch(displayMode)
+        {
+        case DISP_MODE_NORMAL:
+            displayClock();
+            displayClimate();
+            calculateAverageSpeed();
+            displayTripInfo();
+            tuneClimate();
+            break;
+        }
         FPS++;
     }
 

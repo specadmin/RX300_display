@@ -26,7 +26,6 @@ extern WORD_DATA            fuelRateDist;
 extern WORD_DATA            averageFuelRate;
 extern WORD_DATA            totalDriveDistance;
 extern DWORD_DATA           totalDriveTime;
-extern WORD_DATA            totalDriveTimeMinutes;
 extern WORD_DATA            tripTimer;
 extern BYTE_DATA            tripDay;
 //-----------------------------------------------------------------------------

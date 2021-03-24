@@ -5,7 +5,6 @@
 #include "climate.h"
 //-----------------------------------------------------------------------------
 BYTE_DATA           ignition = 0;
-BYTE_DATA           selectorAT = 0;
 CFontAreaSet        disp_car;
 CFontAreaSet        disp_doors;
 CFontArea*          disp_door_FL;

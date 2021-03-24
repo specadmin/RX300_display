@@ -25,6 +25,11 @@ public:
         value = new_value;
         updated = 1;
     }
+    void operator++(int)
+    {
+        value++;
+        updated = 1;
+    }
     bool changed()
     {
         register bool tmp = (value != prevValue);

@@ -55,6 +55,8 @@
 
 #define OSD_MAX_ROWS_COUNT  34
 
+#define REAR_VIDEO_DELAY    2
+
 //----------------------------------------------------------------------------
 #endif
 

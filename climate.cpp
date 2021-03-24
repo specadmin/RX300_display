@@ -4,9 +4,9 @@
 #include "avr-debug/debug.h"
 #include "data.h"
 #include "body.h"
+#include "global.h"
 #include "climate.h"
 //-----------------------------------------------------------------------------
-static BYTE         brightnessMode = 0;
 static char         string[10];
 BYTE_DATA           insideTemp;
 BYTE_DATA           outsideTemp;
@@ -57,7 +57,7 @@ void displayClimate()
         {
             disp_insideTemp.show();
             disp_insideTempValue.show();
-            if(!brightnessMode)
+            if(displayMode == DISP_MODE_NORMAL)
             {
                 disp_scaleHolder.show();
                 disp_fan.show();
@@ -67,7 +67,7 @@ void displayClimate()
         {
             disp_insideTemp.hide();
             disp_insideTempValue.hide();
-            if(!brightnessMode)
+            if(displayMode == DISP_MODE_NORMAL)
             {
                 disp_fan.hide();
                 disp_scale.hide();
@@ -127,7 +127,7 @@ void displayClimate()
     }
 
     // blower speed
-    if(blowerSpeed.updated && blowerSpeed.changed() && climateEnabled && !brightnessMode)
+    if(blowerSpeed.updated && blowerSpeed.changed() && climateEnabled && (displayMode == DISP_MODE_NORMAL))
     {
         blowerSpeed.updated = 0;
         tmp = blowerSpeed.value >> 5;

@@ -5,6 +5,7 @@
 #include "data.h"
 #include "clock.h"
 #include "body.h"
+#include "global.h"
 #include "tripComp.h"
 #include "options.h"
 //-----------------------------------------------------------------------------
@@ -65,19 +66,27 @@ void RTC_init()
 //-----------------------------------------------------------------------------
 void alarms_receiever(BYTE alarms)
 {
+    timer++;
     if(alarms & 0x02)
     {
         RTC.get_time_bcd(time_changed);
     }
+
     if(alarms & 0x01)
     {
         alarmRings = 1;
     }
-    tripTimer++;
+
+    if(ignition)
+    {
+        tripTimer++;
+    }
+
     if(selectorAT & 0x1F)
     {
         totalDriveTime++;
     }
+
     if(options.showFPS)
     {
         DVAR(FPS);

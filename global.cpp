@@ -2,6 +2,7 @@
 #include "avr-debug/debug.h"
 #include "data.h"
 #include "global.h"
+#include "body.h"
 #include "RTD2660AVR/display.h"
 //-----------------------------------------------------------------------------
 CFontArea*          disp_buttons[8];
@@ -12,25 +13,35 @@ BYTE                displayMode = DISP_MODE_NORMAL;
 void displayGlobal()
 {
     static WORD R_timer = 1;
-    if(selectorAT.changed())
+    if(ignition)
     {
-        if(selectorAT.value == 0x40)
+        if(selectorAT.changed())
         {
-            R_timer = timer + REAR_VIDEO_DELAY;
+            if(selectorAT.value == 0x40)
+            {
+                R_timer = timer + REAR_VIDEO_DELAY;
+            }
+            else
+            {
+                display.hideVideo();
+                OSD.show(&OSD.maps[0]);
+                displayMode = DISP_MODE_NORMAL;
+                R_timer = 0;
+            }
         }
-        else
+        if(timer == R_timer)
         {
-            display.hideVideo();
-            OSD.show(&OSD.maps[0]);
-            displayMode = DISP_MODE_NORMAL;
+            OSD.hide();
+            display.showVideo(VS_AV2);
+            displayMode = DISP_MODE_VIDEO;
             R_timer = 0;
         }
     }
-    if(timer == R_timer)
+    else
     {
-        OSD.hide();
-        display.showVideo(VS_AV2);
-        displayMode = DISP_MODE_VIDEO;
+        display.hideVideo();
+        OSD.show(&OSD.maps[0]);
+        displayMode = DISP_MODE_NORMAL;
         R_timer = 0;
     }
 }
